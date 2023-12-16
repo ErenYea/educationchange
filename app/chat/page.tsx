@@ -45,21 +45,48 @@ const Chat = (props: Props) => {
         <div className="flex-1 flex flex-col mt-8 w-full shadow-md dark:shadow-primary/25 hover:shadow-xl transition-shadow rounded-xl overflow-hidden bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 p-12 pt-10 max-h-[70vh]">
           <div className="flex flex-1 flex-col overflow-hidden">
             <div className="flex flex-col flex-1 overflow-y-auto">
-              <div
-                className="text-center opacity-50"
-              >
+              <div className="text-center opacity-50">
                 Ask a question, or describe a task.
               </div>
             </div>
           </div>
-          <div className="flex items-center w-full justify-center">
+          <div className="flex items-center w-full justify-center relative">
             <textarea
-              className="bg-[#00121f] p-4 border border-black/10 dark:border-white/25 rounded-xl w-full max-h-[55vh] min-h-[8vh] overflow-y-auto focus:outline-none"
+              className="bg-[#00121f] p-4 border border-black/10 dark:border-white/25 rounded-xl w-full max-h-[55vh] min-h-[8vh] overflow-y-auto focus:outline-none pr-40 pl-6"
               rows={2}
             />
+            <div className="flex flex-row items-end right-4 absolute bottom-8">
+              <button
+                className="text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors px-3 py-2 sm:px-4 sm:py-2"
+                type="submit"
+                data-testid="submit-button"
+              >
+                Chat{" "}
+              </button>
+              <div className="flex items-center">
+                <button
+                  className="text-sm text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent disabled:opacity-25 p-2 sm:px-3"
+                  type="button"
+                  data-testid="mic-button"
+                >
+                  <svg
+                    stroke="currentColor"
+                    fill="currentColor"
+                    stroke-width="0"
+                    viewBox="0 0 24 24"
+                    className="text-lg sm:text-xl lg:text-2xl"
+                    height="1em"
+                    width="1em"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path fill="none" d="M0 0h24v24H0z"></path>
+                    <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"></path>
+                  </svg>{" "}
+                </button>
+                <div></div>
+              </div>
+            </div>
           </div>
-
-
         </div>
       </section>
     </div>
