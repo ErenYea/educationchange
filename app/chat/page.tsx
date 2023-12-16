@@ -4,8 +4,28 @@ type Props = {};
 
 const Chat = (props: Props) => {
   return (
-    <div className="flex flex-col items-center justify-center pt-20 h-screen w-full">
-      <section className="flex flex-col flex-1 items-center w-full max-w-7xl h-full min-h-[70vh]">
+    <div className="flex items-center h-screen">
+      <div className="flex w-[20vw] flex-col items-center left-0 bottom-0 h-screen overflow-visible z-30 border-r border-black/10 dark:border-white/25 bg-white dark:bg-[#00121f] pt-4">
+        <div
+          className="p-2 w-1/2 border border-primary bg-white dark:bg-[#00121f] hover:bg-white/20 hover:bg-primary shadow-lg rounded-lg flex items-center justify-center z-20 cursor-pointer"
+        >
+          <svg
+            stroke="currentColor"
+            fill="currentColor"
+            stroke-width="0"
+            viewBox="0 0 16 16"
+            className="h-6 w-6 mr-2"
+            height="1em"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"></path>
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"></path>
+          </svg>{" "}
+          New Chat
+        </div>
+      </div>
+      <section className="flex flex-col flex-1 items-center w-full max-w-7xl h-full lg:min-h-[70vh] pt-5 2xl:pt-20 pl-40">
         <div className="flex items-center justify-center w-full">
           <h1 className="text-3xl font-bold text-center w-3/4">
             <div>
@@ -55,7 +75,7 @@ const Chat = (props: Props) => {
               className="bg-[#00121f] p-4 border border-black/10 dark:border-white/25 rounded-xl w-full max-h-[55vh] min-h-[8vh] overflow-y-auto focus:outline-none pr-40 pl-6"
               rows={2}
             />
-            <div className="flex flex-row items-end right-4 absolute bottom-8">
+            <div className="flex flex-row items-end right-4 absolute bottom-6">
               <button
                 className="text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors px-3 py-2 sm:px-4 sm:py-2"
                 type="submit"
