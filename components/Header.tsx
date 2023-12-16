@@ -11,7 +11,7 @@ const Header = async (props: Props) => {
   return (
     <div className="h-[60px] z-40  w-full flex justify-evenly border-b border-b-white/20 top-0 sticky">
       <div className="max-w-7xl flex flex-1 items-center justify-center">
-        <div className="w-full flex space-x-4 items-center">
+        <div className="w-full flex space-x-8 items-center">
           <Link href={"/"} className="flex items-center justify-center space-x-4">
             <Image
               src={"/logo.png"}

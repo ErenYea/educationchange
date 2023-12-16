@@ -20,10 +20,10 @@ export default function RootLayout({
   return (
     <ClientProvider>
       <html lang="en">
-        <body className={poppins.className + "h-screen flex flex-col bg-[#00121f]"}>
+        <body className={poppins.className + "h-screen flex flex-col bg-[#00121f] overflow-y-hidden"}>
           <Header />
           {children}
-          <Footer />
+          {/* <Footer /> */}
         </body>
       </html>
     </ClientProvider>
