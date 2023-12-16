@@ -25,7 +25,7 @@ const Chat = (props: Props) => {
           New Chat
         </div>
       </div>
-      <section className="flex flex-col flex-1 items-center w-full max-w-7xl h-full lg:min-h-[70vh] pt-5 2xl:pt-20 pl-40">
+      <section className="flex flex-col flex-1 items-center w-full max-w-7xl h-full lg:min-h-[70vh] pt-5 2xl:pt-20 2xl:pl-32 px-10 2xl:px-0">
         <div className="flex items-center justify-center w-full">
           <h1 className="text-3xl font-bold text-center w-3/4">
             <div>
