@@ -14,7 +14,7 @@ const Chat = (props: Props) => {
   const getAnswer = () => {
     if (!userInput) return;
     setThinking(true)
-
+    setMessages(prevMessages => [...prevMessages, { user: userInput }]);
     const requestBody = {
       namespace: "letter b",
       query: userInput,
@@ -34,10 +34,7 @@ const Chat = (props: Props) => {
     })
     .then(response => response.json())
     .then(data => {
-      const userMessage = { user: userInput };
-      const systemMessage = { system: data.answer };
-  
-      setMessages(prevMessages => [...prevMessages, userMessage, systemMessage]);
+      setMessages(prevMessages => [...prevMessages, { system: data.answer }]);
       setThinking(false);
     })
     .catch(error => {
