@@ -9,7 +9,42 @@ type Props = {};
 
 const Chat = (props: Props) => {
 
+  const [webUrlInput, setWebUrlInput] = useState<string>("");
+  const [crawling, setCrawling] = useState<boolean>(false)
   const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [state.showFileUploader, state.toggleShowFileUploader])
+
+  const CrawlWebPage = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!webUrlInput) return;
+    setCrawling(true)
+
+    const requestBody = {
+      namespace: "letter b",
+      metadata: {
+        type: "webpage",
+        link: webUrlInput
+      },
+      webpage: webUrlInput,
+      openAIKey: process.env.NEXT_PUBLIC_DEFAULT_OPENAI__API_KEY,
+    }
+  
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/embeddings/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data)
+      setWebUrlInput('')
+      setCrawling(false);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }
 
   return (
     <div className="flex flex-col items-center pt-20 h-screen">
@@ -52,7 +87,7 @@ const Chat = (props: Props) => {
       <div className="w-full">
         <div className="flex justify-center gap-5 px-6">
           <div className="max-w-xl w-full">
-            <div className="flex-col justify-center gap-5">
+            <form onSubmit={CrawlWebPage} className="flex-col justify-center gap-5">
               <div className="shadow-md dark:shadow-primary/25 hover:shadow-xl transition-shadow rounded-xl overflow-hidden bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 h-32 flex gap-5 justify-center items-center px-5">
                 <div className="text-center max-w-sm w-full flex flex-col gap-5 items-center">
                   <div className="flex flex-col w-full">
@@ -60,16 +95,19 @@ const Chat = (props: Props) => {
                       className="w-full bg-gray-50 dark:bg-gray-900 px-4 py-2 border rounded-md border-black/10 dark:border-white/25"
                       placeholder="Insert website URL"
                       type="text"
+                      value={webUrlInput}
+                      disabled={crawling}
+                      onChange={(event) => setWebUrlInput(event.target.value)}
                     />
                   </div>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-5">
-                  <button className="px-8 py-3 text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-[#00121f] border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors">
-                    Crawl{" "}
+                  <button type="submit" disabled={crawling} className="px-8 py-3 text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-[#00121f] border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200">
+                    { crawling ? 'Crawling...' : 'Crawl' }{" "}
                   </button>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>

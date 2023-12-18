@@ -19,14 +19,14 @@ const FileUploader = () => {
       if (!prevFiles) return null;
       const updatedFiles = Array.from(prevFiles);
       updatedFiles.splice(indexToRemove, 1);
-      return updatedFiles.length > 0 ? updatedFiles : null;
+      return updatedFiles.length > 0 ? (updatedFiles as unknown as FileList) : null;
     });
-  };
+  };  
 
   return (
     <div className="absolute inset-0 backdrop-blur-sm bg-opacity-75 backdrop-filter flex items-center justify-center">
 
-        <div className="absolute bg-gray-800 p-4 rounded-2xl w-1/3 flex flex-col space-y-6 items-center justify-center left-1/3 top-1/4">
+        <div className="absolute bg-gray-800 p-4 rounded-2xl w-1/3 flex flex-col space-y-6 items-center justify-center left-1/3 top-1/4 z-10">
 
             <div className="text-2xl hover:bg-white/10 rounded-full p-1 cursor-pointer absolute right-4 top-4" onClick={toggleShowFileUploader}>
                 <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0z"></path><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
