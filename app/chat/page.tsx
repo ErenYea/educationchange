@@ -35,6 +35,7 @@ const Chat = (props: Props) => {
     .then(response => response.json())
     .then(data => {
       setMessages(prevMessages => [...prevMessages, { system: data.answer }]);
+      setUserInput('')
       setThinking(false);
     })
     .catch(error => {
