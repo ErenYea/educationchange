@@ -4,9 +4,20 @@ type Props = {};
 
 const Login = (props: Props) => {
   return (
-    <div className="flex h-screen w-full items-center bg-gray-200 flex-col">
-      <div className="text-3xl font-semibold text-black">Login</div>
-      <div className="max-w-md mx-auto h-fit mt-6  p-6 px-12 gap-6 bg-white rounded-lg shadow-lg">
+    <div className="w-full h-screen outline-none flex flex-col gap-5 items-center p-6 mt-[10%]">
+      <div className="flex flex-col items-center justify-center px-5">
+        <h1
+          className="text-3xl font-bold text-center"
+        >
+          Login
+        </h1>
+        <h2
+          className="opacity-50 text-center"
+        >
+          Welcome back
+        </h2>
+      </div>
+      <div className="shadow-md dark:shadow-primary/25 hover:shadow-xl transition-shadow rounded-xl overflow-hidden bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 max-w-md w-full p-5 sm:p-10 text-left">
         <Form />
       </div>
     </div>
