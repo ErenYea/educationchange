@@ -1,9 +1,46 @@
+"use client";
+
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 type Props = {};
 
 const Chat = (props: Props) => {
+
+  const [userInput, setUserInput] = useState("");
+  const [thinking, setThinking] = useState(false)
+
+  const getAnswer = () => {
+    if (!userInput) return;
+    setThinking(true)
+
+    const requestBody = {
+      namespace: "letter b",
+      query: userInput,
+      model: "gpt-3.5-turbo",
+      openAIKey: "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",
+      prompt: "",
+      temperature: 0.5,
+      maxTokens: 255
+    };
+  
+    fetch('https://educated-change-backend.onrender.com/projects/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        setThinking(false)
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  };
+
   return (
     <div className="flex items-center h-screen">
       <div className="flex w-[20vw] flex-col space-y-4 items-center left-0 bottom-0 h-screen overflow-visible z-30 border-r border-black/10 dark:border-white/25 bg-white dark:bg-[#00121f] pt-4">
@@ -54,8 +91,8 @@ const Chat = (props: Props) => {
                 fill="none"
                 stroke-width="2"
                 viewBox="0 0 24 24"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 height="1em"
                 width="1em"
                 xmlns="http://www.w3.org/2000/svg"
@@ -70,8 +107,8 @@ const Chat = (props: Props) => {
                 fill="none"
                 stroke-width="2"
                 viewBox="0 0 24 24"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 height="1em"
                 width="1em"
                 xmlns="http://www.w3.org/2000/svg"
@@ -134,7 +171,7 @@ const Chat = (props: Props) => {
                   {" "}
                   <div className="py-3 px-5 w-fit bg-opacity-60 items-start rounded-md flex flex-col overflow-hidden scroll-pb-32 dark:bg-white">
                     <div className="text-black">
-                      <p> What is this about ?</p>
+                      <p> What is this about ? </p>
                     </div>
                   </div>
                 </div>
@@ -153,43 +190,43 @@ const Chat = (props: Props) => {
             </div>
           </div>
           <div className="flex items-center w-full justify-center relative">
+
             <textarea
               className="bg-[#00121f] p-4 border border-black/10 dark:border-white/25 rounded-xl w-full max-h-[8vh] min-h-[8vh] overflow-y-auto focus:outline-none pr-44 pl-6"
               placeholder="Ask a question, or describe a task."
               rows={2}
+              value={userInput}
+              onChange={(event) => setUserInput(event.target.value)}
             />
+
             <div className="flex flex-row items-end right-4 absolute bottom-6">
-              <button
-                className="text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors px-3 py-2 sm:px-4 sm:py-2"
-                type="submit"
-                data-testid="submit-button"
+
+              <button disabled={thinking} onClick={getAnswer}
+                className="text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors px-3 py-2 sm:px-4 sm:py-2 cursor-pointer"
               >
-                Chat{" "}
+                { thinking ? 'Thinking...' : 'Chat' }{" "}
               </button>
-              <div className="flex items-center">
-                <button
-                  className="text-sm text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent disabled:opacity-25 p-2 sm:px-3"
-                  type="button"
-                  data-testid="mic-button"
+
+              <div
+                className="text-sm text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent disabled:opacity-25 p-2 sm:px-3 cursor-pointer"
+              >
+                <svg
+                  stroke="currentColor"
+                  fill="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 24 24"
+                  className="text-lg sm:text-xl lg:text-2xl"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <svg
-                    stroke="currentColor"
-                    fill="currentColor"
-                    stroke-width="0"
-                    viewBox="0 0 24 24"
-                    className="text-lg sm:text-xl lg:text-2xl"
-                    height="1em"
-                    width="1em"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path fill="none" d="M0 0h24v24H0z"></path>
-                    <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"></path>
-                  </svg>{" "}
-                </button>
-                <div></div>
+                  <path fill="none" d="M0 0h24v24H0z"></path>
+                  <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"></path>
+                </svg>{" "}
               </div>
-              <button
-                className="text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent py-2 px-2 disabled:opacity-25 focus:outline-none text-2xl"
+
+              <div
+                className="text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent py-2 px-2 disabled:opacity-25 focus:outline-none text-2xl cursor-pointer"
               >
                 <svg
                   stroke="currentColor"
@@ -203,7 +240,8 @@ const Chat = (props: Props) => {
                   <path fill="none" d="M0 0h24v24H0V0z"></path>
                   <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path>
                 </svg>{" "}
-              </button>
+              </div>
+
             </div>
           </div>
         </div>
