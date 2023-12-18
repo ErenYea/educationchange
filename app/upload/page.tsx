@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useChatStore } from '@/stores/ChatStore'
 import Link from "next/link";
 import FileUploader from "@/components/FileUploader";
 
@@ -8,7 +9,7 @@ type Props = {};
 
 const Chat = (props: Props) => {
 
-  const [showFileUploader, setShowFileUploader] = useState<Boolean>(false)
+  const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [state.showFileUploader, state.toggleShowFileUploader])
 
   return (
     <div className="flex flex-col items-center pt-20 h-screen">
@@ -19,7 +20,7 @@ const Chat = (props: Props) => {
         </p>
       </div>
 
-      <div onClick={() => setShowFileUploader(!showFileUploader)} className="text-sm cursor-pointer disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 border border-black dark:border-white bg-white dark:bg-[#00121f] text-black dark:text-white focus:bg-[#00121f] dark:focus:bg-white hover:bg-[#00121f] dark:hover:bg-white hover:text-white dark:hover:text-black focus:text-white dark:focus:text-black transition-colors py-2 px-4 shadow-none m-auto my-10 w-[15%]">
+      <div onClick={toggleShowFileUploader} className="text-sm cursor-pointer disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 border border-black dark:border-white bg-white dark:bg-[#00121f] text-black dark:text-white focus:bg-[#00121f] dark:focus:bg-white hover:bg-[#00121f] dark:hover:bg-white hover:text-white dark:hover:text-black focus:text-white dark:focus:text-black transition-colors py-2 px-4 shadow-none m-auto my-10 w-[15%]">
         <svg
           stroke="currentColor"
           fill="currentColor"
