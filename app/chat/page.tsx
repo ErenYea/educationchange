@@ -9,6 +9,7 @@ const Chat = (props: Props) => {
 
   const [userInput, setUserInput] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [messages, setMessages] = useState([]);
 
   const getAnswer = () => {
     if (!userInput) return;
@@ -31,14 +32,17 @@ const Chat = (props: Props) => {
       },
       body: JSON.stringify(requestBody)
     })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        setThinking(false)
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+    .then(response => response.json())
+    .then(data => {
+      const userMessage = { user: userInput };
+      const systemMessage = { system: data.answer };
+  
+      setMessages(prevMessages => [...prevMessages, userMessage, systemMessage]);
+      setThinking(false);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
   };
 
   return (
@@ -166,27 +170,19 @@ const Chat = (props: Props) => {
               {/* <div className="text-center opacity-50">
                 Ask a question, or describe a task.
               </div> */}
-              <div className="flex flex-col gap-3">
-                <div className="flex flex-col items-end">
-                  {" "}
-                  <div className="py-3 px-5 w-fit bg-opacity-60 items-start rounded-md flex flex-col overflow-hidden scroll-pb-32 dark:bg-white">
-                    <div className="text-black">
-                      <p> What is this about ? </p>
+
+              <div className="flex flex-col gap-3 p-4">
+                {messages.map((message, index) => (
+                  <div key={index} className={`flex flex-col items-${message.user ? 'end' : 'start'}`}>
+                    <div className={`py-3 px-5 w-fit bg-opacity-60 max-w-[60%] text-black items-${message.user ? 'start' : 'end'} rounded-md flex flex-col overflow-hidden scroll-pb-32 ${message.user ? 'dark:bg-white' : 'bg-opacity-60 dark:bg-purple-100'}`}>
+                      <div>
+                        <p>{message.user || message.system}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex flex-col items-start">
-                  {" "}
-                  <div className="py-3 px-5 w-fit bg-opacity-60 items-end dark:bg-purple-100 text-black rounded-md flex flex-col overflow-hidden scroll-pb-32">
-                    <div>
-                      <p>
-                        About what specifically? Could you please provide more
-                        context or clarify your question?
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
+
             </div>
           </div>
           <div className="flex items-center w-full justify-center relative">
