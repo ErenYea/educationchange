@@ -8,7 +8,7 @@ type Props = {};
 const Chat = (props: Props) => {
 
   const [userInput, setUserInput] = useState("");
-  const [thinking, setThinking] = useState(false)
+  const [thinking, setThinking] = useState(false);
 
   const getAnswer = () => {
     if (!userInput) return;
@@ -18,13 +18,13 @@ const Chat = (props: Props) => {
       namespace: "letter b",
       query: userInput,
       model: "gpt-3.5-turbo",
-      openAIKey: "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",
+      openAIKey: process.env.NEXT_PUBLIC_DEFAULT_OPENAI__API_KEY,
       prompt: "",
       temperature: 0.5,
       maxTokens: 255
     };
   
-    fetch('https://educated-change-backend.onrender.com/projects/query', {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/query`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
