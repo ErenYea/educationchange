@@ -1,12 +1,27 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useChatStore } from '@/stores/ChatStore'
 
 const FileUploader = () => {
 
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [state.showFileUploader, state.toggleShowFileUploader])
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    setSelectedFiles(files);
+  };
+
+  const removeFile = (indexToRemove: number) => {
+    setSelectedFiles((prevFiles) => {
+      if (!prevFiles) return null;
+      const updatedFiles = Array.from(prevFiles);
+      updatedFiles.splice(indexToRemove, 1);
+      return updatedFiles.length > 0 ? updatedFiles : null;
+    });
+  };
 
   return (
     <div className="absolute inset-0 backdrop-blur-sm bg-opacity-75 backdrop-filter flex items-center justify-center">
@@ -29,14 +44,29 @@ const FileUploader = () => {
                         type="file"
                         className="hidden"
                         ref={inputFileRef}
+                        onChange={handleFileChange}
+                        multiple
                     />
                     <label
                         htmlFor="fileInput"
                         className="transition-opacity opacity-50 cursor-pointer hover:opacity-100 hover:underline"
                         onClick={() => inputFileRef.current?.click()}
-                    >
+                        >
                         Drag and drop files here, or click to browse
                     </label>
+                    {selectedFiles && (
+                    <div className="flex items-center justify-center space-x-2 w-full px-4 mt-4">
+                        <h3 className="flex items-end">Selected Files:</h3>
+                        <ul className="flex items-center justify-center gap-x-4 gap-y-2 flex-wrap">
+                            {Array.from(selectedFiles).map((file, index) => (
+                                <li key={index} className="flex flex-co items-end">
+                                    <span>{file.name}</span>
+                                    <button className="text-red-500 hover:bg-white/10 px-2 rounded-full text-center w-fit" onClick={() => removeFile(index)}>x</button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    )}
                     </div>
                 </div>
                 </div>
