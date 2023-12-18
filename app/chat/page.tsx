@@ -6,9 +6,7 @@ type Props = {};
 const Chat = (props: Props) => {
   return (
     <div className="flex items-center h-screen">
-
       <div className="flex w-[20vw] flex-col space-y-4 items-center left-0 bottom-0 h-screen overflow-visible z-30 border-r border-black/10 dark:border-white/25 bg-white dark:bg-[#00121f] pt-4">
-
         <div className="p-2 w-1/2 border border-primary bg-white dark:bg-[#00121f] hover:bg-white/20 hover:bg-primary shadow-lg rounded-lg flex items-center justify-center z-20 cursor-pointer">
           <svg
             stroke="currentColor"
@@ -26,12 +24,8 @@ const Chat = (props: Props) => {
           New Chat
         </div>
 
-        <div className="w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800"
-        >
-          <Link
-            className="flex flex-col flex-1 min-w-0 p-4"
-            href="#"
-          >
+        <div className="w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800">
+          <Link className="flex flex-col flex-1 min-w-0 p-4" href="#">
             <div className="flex items-center gap-2">
               <svg
                 stroke="currentColor"
@@ -54,7 +48,6 @@ const Chat = (props: Props) => {
           </Link>
 
           <div className="opacity-0 group-hover:opacity-100 flex items-center justify-center bg-gradient-to-l from-white dark:from-black to-transparent z-10 transition-opacity">
-
             <button className="p-0 hover:text-blue-300" type="button">
               <svg
                 stroke="currentColor"
@@ -89,11 +82,8 @@ const Chat = (props: Props) => {
                 <line x1="14" y1="11" x2="14" y2="17"></line>
               </svg>
             </button>
-
           </div>
-
         </div>
-
       </div>
 
       <section className="flex flex-col flex-1 items-center w-full max-w-7xl h-full lg:min-h-[70vh] pt-5 2xl:pt-20 2xl:pl-32 px-10 2xl:px-0">
@@ -136,14 +126,36 @@ const Chat = (props: Props) => {
         <div className="flex-1 flex flex-col mt-8 w-full shadow-md dark:shadow-primary/25 hover:shadow-xl transition-shadow rounded-xl overflow-hidden bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 p-12 pt-10 max-h-[70vh]">
           <div className="flex flex-1 flex-col overflow-hidden">
             <div className="flex flex-col flex-1 overflow-y-auto">
-              <div className="text-center opacity-50">
+              {/* <div className="text-center opacity-50">
                 Ask a question, or describe a task.
+              </div> */}
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col items-end">
+                  {" "}
+                  <div className="py-3 px-5 w-fit bg-opacity-60 items-start rounded-md flex flex-col overflow-hidden scroll-pb-32 dark:bg-white">
+                    <div className="text-black">
+                      <p> What is this about ?</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col items-start">
+                  {" "}
+                  <div className="py-3 px-5 w-fit bg-opacity-60 items-end dark:bg-purple-100 text-black rounded-md flex flex-col overflow-hidden scroll-pb-32">
+                    <div>
+                      <p>
+                        About what specifically? Could you please provide more
+                        context or clarify your question?
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div className="flex items-center w-full justify-center relative">
             <textarea
-              className="bg-[#00121f] p-4 border border-black/10 dark:border-white/25 rounded-xl w-full max-h-[55vh] min-h-[8vh] overflow-y-auto focus:outline-none pr-40 pl-6"
+              className="bg-[#00121f] p-4 border border-black/10 dark:border-white/25 rounded-xl w-full max-h-[8vh] min-h-[8vh] overflow-y-auto focus:outline-none pr-40 pl-6"
+              placeholder="Ask a question, or describe a task."
               rows={2}
             />
             <div className="flex flex-row items-end right-4 absolute bottom-6">
@@ -180,7 +192,6 @@ const Chat = (props: Props) => {
           </div>
         </div>
       </section>
-
     </div>
   );
 };
