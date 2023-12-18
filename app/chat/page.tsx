@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 type Props = {};
@@ -5,10 +6,10 @@ type Props = {};
 const Chat = (props: Props) => {
   return (
     <div className="flex items-center h-screen">
-      <div className="flex w-[20vw] flex-col items-center left-0 bottom-0 h-screen overflow-visible z-30 border-r border-black/10 dark:border-white/25 bg-white dark:bg-[#00121f] pt-4">
-        <div
-          className="p-2 w-1/2 border border-primary bg-white dark:bg-[#00121f] hover:bg-white/20 hover:bg-primary shadow-lg rounded-lg flex items-center justify-center z-20 cursor-pointer"
-        >
+
+      <div className="flex w-[20vw] flex-col space-y-4 items-center left-0 bottom-0 h-screen overflow-visible z-30 border-r border-black/10 dark:border-white/25 bg-white dark:bg-[#00121f] pt-4">
+
+        <div className="p-2 w-1/2 border border-primary bg-white dark:bg-[#00121f] hover:bg-white/20 hover:bg-primary shadow-lg rounded-lg flex items-center justify-center z-20 cursor-pointer">
           <svg
             stroke="currentColor"
             fill="currentColor"
@@ -24,7 +25,77 @@ const Chat = (props: Props) => {
           </svg>{" "}
           New Chat
         </div>
+
+        <div className="w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800"
+        >
+          <Link
+            className="flex flex-col flex-1 min-w-0 p-4"
+            href="#"
+          >
+            <div className="flex items-center gap-2">
+              <svg
+                stroke="currentColor"
+                fill="currentColor"
+                stroke-width="0"
+                viewBox="0 0 24 24"
+                className="text-xl"
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path fill="none" d="M0 0h24v24H0V0z"></path>
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"></path>
+              </svg>
+              <p> Chat Name </p>
+            </div>
+            <div className="grid-cols-2 text-xs opacity-50 whitespace-nowrap">
+              951f5757-8dc3-4488-832f-ebe8c28cd6b7
+            </div>
+          </Link>
+
+          <div className="opacity-0 group-hover:opacity-100 flex items-center justify-center bg-gradient-to-l from-white dark:from-black to-transparent z-10 transition-opacity">
+
+            <button className="p-0 hover:text-blue-300" type="button">
+              <svg
+                stroke="currentColor"
+                fill="none"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <button className="p-5 hover:text-red-700" type="button">
+              <svg
+                stroke="currentColor"
+                fill="none"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+
+          </div>
+
+        </div>
+
       </div>
+
       <section className="flex flex-col flex-1 items-center w-full max-w-7xl h-full lg:min-h-[70vh] pt-5 2xl:pt-20 2xl:pl-32 px-10 2xl:px-0">
         <div className="flex items-center justify-center w-full">
           <h1 className="text-3xl font-bold text-center w-3/4">
@@ -109,6 +180,7 @@ const Chat = (props: Props) => {
           </div>
         </div>
       </section>
+
     </div>
   );
 };
