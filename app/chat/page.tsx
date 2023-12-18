@@ -9,7 +9,7 @@ const Chat = (props: Props) => {
 
   const [userInput, setUserInput] = useState("");
   const [thinking, setThinking] = useState(false);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<{ user?: string; system?: string }[]>([]);
 
   const getAnswer = () => {
     if (!userInput) return;
