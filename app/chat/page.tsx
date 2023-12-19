@@ -6,15 +6,17 @@ import React, { useState } from "react";
 type Props = {};
 
 const Chat = (props: Props) => {
-
   const [userInput, setUserInput] = useState("");
   const [thinking, setThinking] = useState(false);
-  const [messages, setMessages] = useState<{ user?: string; system?: string }[]>([]);
+  const [showPromptUpdater, setShowPromptUpdater] = useState(false);
+  const [messages, setMessages] = useState<
+    { user?: string; system?: string }[]
+  >([]);
 
   const getAnswer = () => {
     if (!userInput) return;
-    setThinking(true)
-    setMessages(prevMessages => [...prevMessages, { user: userInput }]);
+    setThinking(true);
+    setMessages((prevMessages) => [...prevMessages, { user: userInput }]);
     const requestBody = {
       namespace: "letter b",
       query: userInput,
@@ -22,25 +24,28 @@ const Chat = (props: Props) => {
       openAIKey: process.env.NEXT_PUBLIC_DEFAULT_OPENAI__API_KEY,
       prompt: "",
       temperature: 0.5,
-      maxTokens: 255
+      maxTokens: 255,
     };
-  
+
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/query`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(requestBody),
     })
-    .then(response => response.json())
-    .then(data => {
-      setMessages(prevMessages => [...prevMessages, { system: data.answer }]);
-      setUserInput('')
-      setThinking(false);
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { system: data.answer },
+        ]);
+        setUserInput("");
+        setThinking(false);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   return (
@@ -145,7 +150,11 @@ const Chat = (props: Props) => {
                 Share
               </p>{" "}
             </button>
-            <button className="flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-center text-white transition-colors bg-black border border-black rounded-md outline-none disabled:opacity-80 focus:ring ring-primary/10 dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 sm:px-4 sm:py-2">
+
+            <button
+              onClick={() => setShowPromptUpdater(true)}
+              className="flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-center text-white transition-colors bg-black border border-black rounded-md outline-none disabled:opacity-80 focus:ring ring-primary/10 dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 sm:px-4 sm:py-2"
+            >
               <svg
                 stroke="currentColor"
                 fill="currentColor"
@@ -159,6 +168,31 @@ const Chat = (props: Props) => {
               </svg>
               Customize
             </button>
+
+            {
+              showPromptUpdater && (
+                <div className="fixed inset-0 z-50 flex justify-center py-25 overflow-auto cursor-pointer md:z-40 bg-black/50 backdrop-blur-sm">
+                  <div className="relative w-[90vw] my-auto flex flex-col items-center justify-center space-y-4 h-fit max-w-2xl rounded-xl bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 p-10 shadow-xl dark:shadow-primary/50 focus:outline-none cursor-auto">
+                    <div className="text-2xl hover:bg-white/10 rounded-full p-1 cursor-pointer absolute right-4 top-4" onClick={() => setShowPromptUpdater(false)}>
+                      <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0z"></path><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+                    </div>
+                    <h2
+                      className="m-0 text-2xl font-bold border-b border-grey"
+                    >
+                      Customize your brain
+                    </h2>
+                    <p className="">Edit Base Prompt Here</p>
+                    <textarea className="w-full min-h-[200px] max-h-[500px] px-4 py-2 border rounded-md bg-gray-50 dark:bg-gray-900 border-black/10 dark:border-white/25 p-auto" />
+                    <div className="flex justify-between gap-3">
+                      <button className="disabled:opacity-80 text-center font-medium focus:ring ring-primary/10 outline-none gap-2 dark:border-white text-black dark:text-white focus:bg-black dark:focus:bg-white dark:hover:bg-white dark:hover:text-black focus:text-white dark:focus:text-black transition-colors z-20 flex items-center grow justify-center px-4 py-2 text-xl bg-white border rounded-lg shadow-lg align-center border-primary dark:bg-black hover:text-white hover:bg-black top-1">
+                        <p>Apply</p>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
           </div>
         </div>
 
@@ -171,8 +205,21 @@ const Chat = (props: Props) => {
 
               <div className="flex flex-col gap-3 p-4">
                 {messages.map((message, index) => (
-                  <div key={index} className={`flex flex-col items-${message.user ? 'end' : 'start'}`}>
-                    <div className={`py-3 px-5 w-fit bg-opacity-60 max-w-[60%] text-black items-${message.user ? 'start' : 'end'} rounded-md flex flex-col overflow-hidden scroll-pb-32 ${message.user ? 'dark:bg-white' : 'bg-opacity-60 dark:bg-purple-100'}`}>
+                  <div
+                    key={index}
+                    className={`flex flex-col items-${
+                      message.user ? "end" : "start"
+                    }`}
+                  >
+                    <div
+                      className={`py-3 px-5 w-fit bg-opacity-60 max-w-[60%] text-black items-${
+                        message.user ? "start" : "end"
+                      } rounded-md flex flex-col overflow-hidden scroll-pb-32 ${
+                        message.user
+                          ? "dark:bg-white"
+                          : "bg-opacity-60 dark:bg-purple-100"
+                      }`}
+                    >
                       <div>
                         <p>{message.user || message.system}</p>
                       </div>
@@ -180,11 +227,9 @@ const Chat = (props: Props) => {
                   </div>
                 ))}
               </div>
-
             </div>
           </div>
           <div className="flex items-center w-full justify-center relative">
-
             <textarea
               className="bg-[#00121f] p-4 border border-black/10 dark:border-white/25 rounded-xl w-full max-h-[8vh] min-h-[8vh] overflow-y-auto focus:outline-none pr-44 pl-6"
               placeholder="Ask a question, or describe a task."
@@ -194,16 +239,15 @@ const Chat = (props: Props) => {
             />
 
             <div className="flex flex-row items-end right-4 absolute 2xl:bottom-6">
-
-              <button disabled={thinking} onClick={getAnswer}
+              <button
+                disabled={thinking}
+                onClick={getAnswer}
                 className="text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors px-3 py-2 sm:px-4 sm:py-2 cursor-pointer"
               >
-                { thinking ? 'Thinking...' : 'Chat' }{" "}
+                {thinking ? "Thinking..." : "Chat"}{" "}
               </button>
 
-              <div
-                className="text-sm text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent disabled:opacity-25 p-2 sm:px-3 cursor-pointer"
-              >
+              <div className="text-sm text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent disabled:opacity-25 p-2 sm:px-3 cursor-pointer">
                 <svg
                   stroke="currentColor"
                   fill="currentColor"
@@ -219,9 +263,7 @@ const Chat = (props: Props) => {
                 </svg>{" "}
               </div>
 
-              <div
-                className="text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent py-2 px-2 disabled:opacity-25 focus:outline-none text-2xl cursor-pointer"
-              >
+              <div className="text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent py-2 px-2 disabled:opacity-25 focus:outline-none text-2xl cursor-pointer">
                 <svg
                   stroke="currentColor"
                   fill="currentColor"
@@ -235,7 +277,6 @@ const Chat = (props: Props) => {
                   <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path>
                 </svg>{" "}
               </div>
-
             </div>
           </div>
         </div>
