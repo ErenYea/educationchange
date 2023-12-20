@@ -9,7 +9,7 @@ const Logout = (props: Props) => {
     signOut();
   };
   return (
-    <div onClick={logout} className="cursor-pointer">
+    <div onClick={logout} className="disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 border border-red-500 hover:bg-red-500 hover:text-white transition-colors py-2 px-4 cursor-pointer">
       Logout
     </div>
   );

@@ -34,7 +34,6 @@ export const options = {
         const user = await db.user.findUnique({
           where: { email: credentials?.email },
         });
-        console.log({ credentials });
         if (user) {
           const checkingPassword = await compare(
             credentials?.password || "",
@@ -68,7 +67,6 @@ export const options = {
   },
   callbacks: {
     jwt: ({ token, user }) => {
-      console.log("Jwt", { token, user });
       if (user) {
         return {
           ...token,
@@ -79,11 +77,6 @@ export const options = {
       return token;
     },
     session: ({ session, token, user }) => {
-      console.log("Session Callbacks", { session, token });
-      // session.accessToken = token.accessToken;
-      // session.user.id = token.id;
-      // console.log("Hello");
-      // console.log(session, user);
       return { ...session, id: token.sub };
     },
 
@@ -100,9 +93,4 @@ export const options = {
     signIn: "/login",
   },
 
-  // events: {
-  //   async signIn({ user, isNewUser }) {
-  //     console.log({ user }, "Signed in");
-  //   },
-  // },
 } satisfies AuthOptions;
