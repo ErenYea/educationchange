@@ -2,7 +2,7 @@
 
 import db from "./db";
 
-export async function uploadCrawler(topicName: string, userInput: string, chatId:string) {
+export async function generateMessage(topicName: string, userInput: string, chatId:string) {
     try {
         const requestBody = {
             namespace: topicName,
@@ -13,7 +13,7 @@ export async function uploadCrawler(topicName: string, userInput: string, chatId
             temperature: 0.5,
             maxTokens: 255,
         };
-        
+        console.log(requestBody)
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/query`, {
             method: 'POST',
             headers: {
@@ -54,6 +54,13 @@ export async function createAChat(userId: string) {
 
 export async function getAllChats(userId: string) {
     const chats = await db.chat.findMany({
+        where: { userId: userId },
+    });
+    return { success: true, message: "successful", data: chats };
+}
+
+export async function getAllTopics(userId: string) {
+    const chats = await db.topic.findMany({
         where: { userId: userId },
     });
     return { success: true, message: "successful", data: chats };

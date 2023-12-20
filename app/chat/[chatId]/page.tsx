@@ -2,25 +2,29 @@
 
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { createAChat, getAllChats } from "@/lib/chat";
+import { createAChat, getAllChats, getAllTopics, generateMessage } from "@/lib/chat";
 import { useSession } from "next-auth/react";
-import { Chat } from "@prisma/client";
+import { Chat, Topic } from "@prisma/client";
+import { usePathname } from 'next/navigation'
 
 type Props = {};
 
 const Chat = (props: Props) => {
   const [userInput, setUserInput] = useState("");
+  const [chatId, setChatId] = useState("")
+  const [topicName, setTopicName] = useState<string>("")
   const [thinking, setThinking] = useState(false);
   const [showPromptUpdater, setShowPromptUpdater] = useState(false);
   const [messages, setMessages] = useState<
     { user?: string; system?: string }[]
   >([]);
   const [userChats, setUserChats] = useState<Chat[]>([])
+  const [userTopics, setUserTopics] = useState<Topic[]>([])
   const session = useSession();
+  const pathname = usePathname()
 
   const createChat = async () => {
     const response = await createAChat(session.data?.id)
-    console.log(response)
   }
 
   const getChats = async () => {
@@ -29,46 +33,38 @@ const Chat = (props: Props) => {
     return response
   }
 
+  const getTopics = async () => {
+    const response = await getAllTopics(session.data?.id)
+    setUserTopics(response.data)
+    return response
+  }
+
   useEffect(() => {
     if (session.data) {
-      const chats = getChats()
-      console.log(chats)
+      getChats()
+      getTopics()
     }
   }, [session])
+  
+  useEffect(() => {
+    if (pathname) {
+      setChatId(pathname.replace('/chat/', ''))
+    }
+  }, [pathname])
 
-  const getAnswer = () => {
+  const getAnswer =  async () => {
     if (!userInput) return;
     setThinking(true);
     setMessages((prevMessages) => [...prevMessages, { user: userInput }]);
-    const requestBody = {
-      namespace: "letter b",
-      query: userInput,
-      model: "gpt-3.5-turbo",
-      openAIKey: process.env.NEXT_PUBLIC_DEFAULT_OPENAI__API_KEY,
-      prompt: "",
-      temperature: 0.5,
-      maxTokens: 255,
-    };
 
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/query`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { system: data.answer },
-        ]);
-        setUserInput("");
-        setThinking(false);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    const response = await generateMessage(topicName, userInput, chatId)
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { system: response.data.answer },
+    ]);
+    setUserInput("");
+    setThinking(false);
   };
 
   return (
@@ -94,7 +90,7 @@ const Chat = (props: Props) => {
 
         {
           userChats?.map((chat, ind) => (
-            <div className="w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800">
+            <div key={ind} className="w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800">
               <Link className="flex flex-col flex-1 min-w-0 p-4" href={`/chat/${chat.id}`}>
                 <div className="flex items-center gap-2">
                   <svg
@@ -160,7 +156,17 @@ const Chat = (props: Props) => {
 
       <section className="flex flex-col flex-1 items-center w-full max-w-7xl h-full lg:min-h-[70vh] pt-5 2xl:pt-20 2xl:pl-32 px-10 2xl:px-0">
         <div className="flex items-center justify-center w-full">
-          <h1 className="text-3xl font-bold text-center w-3/4">
+          <div className="w-1/4">
+            <select className="text-white bg-[#00121f] border p-2 rounded-md w-full" value={topicName} onChange={(event) => setTopicName(event.target.value)}>
+              <option value="" disabled>Select Topic</option>
+              {
+                userTopics.map((item) => (
+                  <option key={item.id} value={item.name}> { item.name.replace(session.data?.user?.email, '').replaceAll('-', ' ').trim() } </option>
+                ))
+              }
+            </select>
+          </div>
+          <h1 className="text-2xl font-bold text-center w-2/4">
             <div>
               <span>
                 Chat with your Digital Twin -{" "}
@@ -172,7 +178,7 @@ const Chat = (props: Props) => {
               and chat with them
             </div>
           </h1>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-center w-1/4">
             <button className="text-sm text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 text-black dark:text-white bg-transparent disabled:opacity-25 gap-x-10 group-hover:visible hover:text-red-500 transition-[colors,opacity] p-1">
               <p className="flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-center text-white transition-colors bg-black border border-black rounded-md outline-none disabled:opacity-80 focus:ring ring-primary/10 dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 sm:px-4 sm:py-2">
                 Share

@@ -26,7 +26,7 @@ export async function uploadCrawler(id: string, topicName: string, email: string
 
         try {
             await db.topic.create({
-              data: { name: topicName, userId: id },
+              data: { name: `${email}-${topicName.replaceAll(' ', '-')}`, userId: id },
             });
     
             return { success: true, message: "successful", data: data };
