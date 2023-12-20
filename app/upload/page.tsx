@@ -4,11 +4,13 @@ import React, { useState } from "react";
 import { useChatStore } from '@/stores/ChatStore'
 import Link from "next/link";
 import FileUploader from "@/components/FileUploader";
+import { useSession } from "next-auth/react";
 
 type Props = {};
 
 const Chat = (props: Props) => {
 
+  const session = useSession();
   const [webUrlInput, setWebUrlInput] = useState<string>("");
   const [crawling, setCrawling] = useState<boolean>(false)
   const [topic, setTopic] = useState<string>("");
@@ -20,7 +22,7 @@ const Chat = (props: Props) => {
     setCrawling(true)
 
     const requestBody = {
-      namespace: topic,
+      namespace: `${session.data?.user?.email}-${topic.replaceAll(' ', '-')}`,
       metadata: {
         type: "webpage",
         link: webUrlInput

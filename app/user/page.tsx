@@ -1,7 +1,5 @@
 import React from "react";
 import { getServerSession } from "next-auth";
-import Image from "next/image";
-import Link from "next/link";
 import Logout from "@/components/Logout";
 
 const page = async () => {
