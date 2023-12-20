@@ -55,7 +55,7 @@ const Chat = (props: Props) => {
           <svg
             stroke="currentColor"
             fill="currentColor"
-            stroke-width="0"
+            strokeWidth="0"
             viewBox="0 0 16 16"
             className="h-6 w-6 mr-2"
             height="1em"
@@ -74,7 +74,7 @@ const Chat = (props: Props) => {
               <svg
                 stroke="currentColor"
                 fill="currentColor"
-                stroke-width="0"
+                strokeWidth="0"
                 viewBox="0 0 24 24"
                 className="text-xl"
                 height="1em"
@@ -96,7 +96,7 @@ const Chat = (props: Props) => {
               <svg
                 stroke="currentColor"
                 fill="none"
-                stroke-width="2"
+                strokeWidth="2"
                 viewBox="0 0 24 24"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -112,7 +112,7 @@ const Chat = (props: Props) => {
               <svg
                 stroke="currentColor"
                 fill="none"
-                stroke-width="2"
+                strokeWidth="2"
                 viewBox="0 0 24 24"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -158,7 +158,7 @@ const Chat = (props: Props) => {
               <svg
                 stroke="currentColor"
                 fill="currentColor"
-                stroke-width="0"
+                strokeWidth="0"
                 viewBox="0 0 16 16"
                 height="1em"
                 width="1em"
@@ -174,7 +174,7 @@ const Chat = (props: Props) => {
                 <div className="fixed inset-0 z-50 flex justify-center py-25 overflow-auto cursor-pointer md:z-40 bg-black/50 backdrop-blur-sm">
                   <div className="relative w-[90vw] my-auto flex flex-col items-center justify-center space-y-4 h-fit max-w-2xl rounded-xl bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 p-10 shadow-xl dark:shadow-primary/50 focus:outline-none cursor-auto">
                     <div className="text-2xl hover:bg-white/10 rounded-full p-1 cursor-pointer absolute right-4 top-4" onClick={() => setShowPromptUpdater(false)}>
-                      <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0z"></path><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+                      <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0z"></path><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
                     </div>
                     <h2
                       className="m-0 text-2xl font-bold border-b border-grey"
@@ -251,7 +251,7 @@ const Chat = (props: Props) => {
                 <svg
                   stroke="currentColor"
                   fill="currentColor"
-                  stroke-width="0"
+                  strokeWidth="0"
                   viewBox="0 0 24 24"
                   className="text-lg sm:text-xl lg:text-2xl"
                   height="1em"
@@ -267,7 +267,7 @@ const Chat = (props: Props) => {
                 <svg
                   stroke="currentColor"
                   fill="currentColor"
-                  stroke-width="0"
+                  strokeWidth="0"
                   viewBox="0 0 24 24"
                   height="1em"
                   width="1em"

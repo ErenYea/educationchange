@@ -9,7 +9,6 @@ import { useSession } from "next-auth/react";
 type Props = {};
 
 const Chat = (props: Props) => {
-
   const session = useSession();
   const [webUrlInput, setWebUrlInput] = useState<string>("");
   const [crawling, setCrawling] = useState<boolean>(false)
@@ -41,6 +40,18 @@ const Chat = (props: Props) => {
     .then(response => response.json())
     .then(data => {
       console.log(data)
+
+      // try {
+      //   await db.user.create({
+      //     data: { email: email, hashpassword: hashedPassword },
+      //   });
+    
+      //   return { success: true, message: "Created the new user" };
+      // } catch (e) {
+      //   console.log(e);
+      //   return { success: false, message: "Something went wrong" };
+      // }
+
       setWebUrlInput('')
       setTopic('')
       setCrawling(false);
@@ -63,7 +74,7 @@ const Chat = (props: Props) => {
         <svg
           stroke="currentColor"
           fill="currentColor"
-          stroke-width="0"
+          strokeWidth="0"
           viewBox="0 0 24 24"
           className="text-xl h-[50px] w-[50px]"
           height="1em"
