@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { createAChat, getAllChats, getAllTopics, generateMessage } from "@/lib/chat";
+import { createAChat, getAllChats, getAllTopics, getAllMessages, generateMessage } from "@/lib/chat";
 import { useSession } from "next-auth/react";
-import { Chat, Topic } from "@prisma/client";
+import { Chat, Message, Topic } from "@prisma/client";
 import { usePathname } from 'next/navigation'
 
 type Props = {};
@@ -15,9 +15,7 @@ const Chat = (props: Props) => {
   const [topicName, setTopicName] = useState<string>("")
   const [thinking, setThinking] = useState(false);
   const [showPromptUpdater, setShowPromptUpdater] = useState(false);
-  const [messages, setMessages] = useState<
-    { user?: string; system?: string }[]
-  >([]);
+  const [messages, setMessages] = useState<Message[]>([])
   const [userChats, setUserChats] = useState<Chat[]>([])
   const [userTopics, setUserTopics] = useState<Topic[]>([])
   const session = useSession();
@@ -39,6 +37,14 @@ const Chat = (props: Props) => {
     return response
   }
 
+  const getMessages = async () => {
+    console.log(chatId, 'here')
+    const response = await getAllMessages(chatId)
+    setMessages(response.data)
+    console.log(response.data)
+    return response
+  }
+
   useEffect(() => {
     if (session.data) {
       getChats()
@@ -49,22 +55,24 @@ const Chat = (props: Props) => {
   useEffect(() => {
     if (pathname) {
       setChatId(pathname.replace('/chat/', ''))
+      getMessages()
     }
   }, [pathname])
 
   const getAnswer =  async () => {
     if (!userInput) return;
     setThinking(true);
-    setMessages((prevMessages) => [...prevMessages, { user: userInput }]);
+    //setMessages((prevMessages) => [...prevMessages, { user: userInput }]);
 
-    const response = await generateMessage(topicName, userInput, chatId)
+    await generateMessage(topicName, userInput, chatId)
 
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { system: response.data.answer },
-    ]);
+    // setMessages((prevMessages) => [
+    //   ...prevMessages,
+    //   { system: response.data.answer },
+    // ]);
     setUserInput("");
     setThinking(false);
+    getMessages()
   };
 
   return (
@@ -157,7 +165,7 @@ const Chat = (props: Props) => {
       <section className="flex flex-col flex-1 items-center w-full max-w-7xl h-full lg:min-h-[70vh] pt-5 2xl:pt-20 2xl:pl-32 px-10 2xl:px-0">
         <div className="flex items-center justify-center w-full">
           <div className="w-1/4">
-            <select className="text-white bg-[#00121f] border p-2 rounded-md w-full" value={topicName} onChange={(event) => setTopicName(event.target.value)}>
+            <select required className="text-white bg-[#00121f] border p-2 rounded-md w-full" value={topicName} onChange={(event) => setTopicName(event.target.value)}>
               <option value="" disabled>Select Topic</option>
               {
                 userTopics.map((item) => (
@@ -239,20 +247,20 @@ const Chat = (props: Props) => {
                   <div
                     key={index}
                     className={`flex flex-col items-${
-                      message.user ? "end" : "start"
+                      message.type === 'user' ? "end" : "start"
                     }`}
                   >
                     <div
                       className={`py-3 px-5 w-fit bg-opacity-60 max-w-[60%] text-black items-${
-                        message.user ? "start" : "end"
+                        message.type === 'user' ? "start" : "end"
                       } rounded-md flex flex-col overflow-hidden scroll-pb-32 ${
-                        message.user
+                        message.type === 'user'
                           ? "dark:bg-white"
                           : "bg-opacity-60 dark:bg-purple-100"
                       }`}
                     >
                       <div>
-                        <p>{message.user || message.system}</p>
+                        <p>{message.text}</p>
                       </div>
                     </div>
                   </div>

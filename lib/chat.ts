@@ -64,8 +64,15 @@ export async function getAllChats(userId: string) {
 }
 
 export async function getAllTopics(userId: string) {
-    const chats = await db.topic.findMany({
+    const topics = await db.topic.findMany({
         where: { userId: userId },
     });
-    return { success: true, message: "successful", data: chats };
+    return { success: true, message: "successful", data: topics };
+}
+
+export async function getAllMessages(chatId: string) {
+    const messages = await db.message.findMany({
+        where: { chatId: chatId },
+    });
+    return { success: true, message: "successful", data: messages };
 }
