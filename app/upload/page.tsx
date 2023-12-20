@@ -1,64 +1,43 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useChatStore } from '@/stores/ChatStore'
 import Link from "next/link";
 import FileUploader from "@/components/FileUploader";
 import { useSession } from "next-auth/react";
+import { uploadCrawler, check } from "@/lib/uploadCrawler";
 
 type Props = {};
 
 const Chat = (props: Props) => {
   const session = useSession();
+
+  // const check2 = async () => {
+  //   const kuch = await check(session.data?.id)
+  // }
+
+  // useEffect(() => {
+  //   if(session.data) {
+  //     check2()
+  //   }
+  // }, [session])
+
   const [webUrlInput, setWebUrlInput] = useState<string>("");
   const [crawling, setCrawling] = useState<boolean>(false)
   const [topic, setTopic] = useState<string>("");
   const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [state.showFileUploader, state.toggleShowFileUploader])
 
-  const CrawlWebPage = (event: React.FormEvent<HTMLFormElement>) => {
+  const CrawlWebPage = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!webUrlInput) return;
-    setCrawling(true)
-
-    const requestBody = {
-      namespace: `${session.data?.user?.email}-${topic.replaceAll(' ', '-')}`,
-      metadata: {
-        type: "webpage",
-        link: webUrlInput
-      },
-      webpage: webUrlInput,
-      openAIKey: process.env.NEXT_PUBLIC_DEFAULT_OPENAI__API_KEY,
-    }
-  
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/embeddings/create`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data)
-
-      // try {
-      //   await db.user.create({
-      //     data: { email: email, hashpassword: hashedPassword },
-      //   });
     
-      //   return { success: true, message: "Created the new user" };
-      // } catch (e) {
-      //   console.log(e);
-      //   return { success: false, message: "Something went wrong" };
-      // }
+    setCrawling(true)
+    const response = await uploadCrawler(session.data?.id, topic, session.data?.user?.email || "" , webUrlInput)
+    console.log(response)
+    setWebUrlInput('')
+    setTopic('')
+    setCrawling(false);
 
-      setWebUrlInput('')
-      setTopic('')
-      setCrawling(false);
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
   }
 
   return (

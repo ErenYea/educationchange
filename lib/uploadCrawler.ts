@@ -1,61 +1,49 @@
-import { ZodError, z } from "zod";
+"use server"
 
-import { signIn } from "next-auth/react";
+import db from "./db";
 
-export async function loginUser(prevState: any, formData: FormData) {
-  const email = formData.get("email")?.toString();
-  const password = formData.get("password")?.toString();
+export async function uploadCrawler(id: string, topicName: string, email: string, webUrlInput:string) {
+    try {
+        const requestBody = {
+            namespace: `${email}-${topicName.replaceAll(' ', '-')}`,
+            metadata: {
+              type: "webpage",
+              link: webUrlInput
+            },
+            webpage: webUrlInput,
+            openAIKey: process.env.NEXT_PUBLIC_DEFAULT_OPENAI__API_KEY,
+          }
+        
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/embeddings/create`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        })
 
-  // await new Promise((r) => setTimeout(r, 10000));
-  if (!email || !password) {
-    return {
-      success: false,
-      message: "Please Provide email and password",
-    };
-  }
-  try {
-    z.string().email().parse(email);
-  } catch (e) {
-    return {
-      success: false,
-      message: "Please Provide valid email",
-    };
-  }
-  try {
-    z.string().min(8).max(20).parse(password);
-  } catch (err: unknown) {
-    // Changed err type to unknown
-    // Now we need to assert the type of err to be ZodError before accessing its properties
-    if (err instanceof ZodError) {
-      // Here TypeScript knows err is ZodError
-      // console.log(err.errors[0].message);
-      return {
-        success: false,
-        message: err.errors[0].message,
-      };
-    } else {
-      // Handle other error types or rethrow
-      console.error("An unexpected error occurred", err);
+        const data = await response.json()
+
+        try {
+            await db.topic.create({
+              data: { name: topicName, userId: id },
+            });
+    
+            return { success: true, message: "successful", data: data };
+        } catch (error) {
+            return { success: false, message: "error" };
+        }
+          
+    } catch (e) {
+        console.log(e);
+        return { success: false, message: "error" };
     }
-    return {
-      success: false,
-      message: "Please Provide valid password",
-    };
-  }
-
-  const response = await signIn("credentials", {
-    email: email,
-    password: password,
-    redirect: false,
-  });
-  console.log({ response });
-  if (response?.status == 200) {
-    return {
-      success: true,
-      message: "Successfully logged in",
-    };
-  }
-  console.log({ response });
-  // console.log("Get the object", { email, password, name });
-  return { success: false, message: "Something went wrong" };
 }
+
+// export async function check(id:string) {
+//     const response = await db.user.findUnique({
+//         where: { id: id }
+//     })
+//     console.log(response)
+//     return response
+// }
