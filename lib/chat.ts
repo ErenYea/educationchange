@@ -43,7 +43,7 @@ export async function uploadCrawler(topicName: string, userInput: string, chatId
 export async function createAChat(userId: string) {
     try {
         await db.chat.create({
-          data: { userId: userId },
+          data: { userId: userId, name: "New Chat" },
         });
 
         return { success: true, message: "successful" };
@@ -52,3 +52,9 @@ export async function createAChat(userId: string) {
     }
 }
 
+export async function getAllChats(userId: string) {
+    const chats = await db.chat.findMany({
+        where: { userId: userId },
+    });
+    return { success: true, message: "successful", data: chats };
+}
