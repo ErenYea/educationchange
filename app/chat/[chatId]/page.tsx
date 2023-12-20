@@ -23,6 +23,7 @@ const Chat = (props: Props) => {
 
   const createChat = async () => {
     const response = await createAChat(session.data?.id)
+    getChats()
   }
 
   const getChats = async () => {
@@ -38,10 +39,8 @@ const Chat = (props: Props) => {
   }
 
   const getMessages = async (chatId: string) => {
-    console.log(chatId, 'here')
     const response = await getAllMessages(chatId)
     setMessages(response.data)
-    console.log(response.data)
     return response
   }
 
@@ -91,7 +90,7 @@ const Chat = (props: Props) => {
 
         {
           userChats?.map((chat, ind) => (
-            <div key={ind} className="w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800">
+            <div key={ind} className={`w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800 ${chat.id === chatId && 'bg-gradient-to-r from-white dark:from-black to-transparent'}`}>
               <Link className="flex flex-col flex-1 min-w-0 p-4" href={`/chat/${chat.id}`}>
                 <div className="flex items-center gap-2">
                   <svg
