@@ -95,7 +95,7 @@ const Chat = (props: Props) => {
         {
           userChats?.map((chat, ind) => (
             <div className="w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800">
-              <Link className="flex flex-col flex-1 min-w-0 p-4" href={`chat/${chat.id}`}>
+              <Link className="flex flex-col flex-1 min-w-0 p-4" href={`/chat/${chat.id}`}>
                 <div className="flex items-center gap-2">
                   <svg
                     stroke="currentColor"
