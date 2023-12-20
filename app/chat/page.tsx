@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import React, { useState } from "react";
+import { createAChat } from "@/lib/chat";
+import { useSession } from "next-auth/react";
 
 type Props = {};
 
@@ -12,6 +14,12 @@ const Chat = (props: Props) => {
   const [messages, setMessages] = useState<
     { user?: string; system?: string }[]
   >([]);
+  const session = useSession();
+
+  const createChat = async () => {
+    const response = await createAChat(session.data?.id)
+    console.log(response)
+  }
 
   const getAnswer = () => {
     if (!userInput) return;
@@ -51,7 +59,7 @@ const Chat = (props: Props) => {
   return (
     <div className="flex items-center h-screen">
       <div className="flex w-[20vw] flex-col space-y-4 items-center left-0 bottom-0 h-screen overflow-visible z-30 border-r border-black/10 dark:border-white/25 bg-white dark:bg-[#00121f] pt-4">
-        <div className="p-2 w-1/2 border border-primary bg-white dark:bg-[#00121f] hover:bg-white/20 hover:bg-primary shadow-lg rounded-lg flex items-center justify-center z-20 cursor-pointer">
+        <div onClick={createChat} className="p-2 w-1/2 border border-primary bg-white dark:bg-[#00121f] hover:bg-white/20 hover:bg-primary shadow-lg rounded-lg flex items-center justify-center z-20 cursor-pointer">
           <svg
             stroke="currentColor"
             fill="currentColor"
