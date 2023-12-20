@@ -28,6 +28,10 @@ export async function generateMessage(topicName: string, userInput: string, chat
             await db.message.create({
               data: { text: userInput, type: "user", chatId: chatId },
             });
+
+            await db.message.create({
+                data: { text: data.answer, type: "system", chatId: chatId },
+            });
     
             return { success: true, message: "successful", data: data };
         } catch (error) {
