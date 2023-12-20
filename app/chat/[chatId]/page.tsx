@@ -37,7 +37,7 @@ const Chat = (props: Props) => {
     return response
   }
 
-  const getMessages = async () => {
+  const getMessages = async (chatId: string) => {
     console.log(chatId, 'here')
     const response = await getAllMessages(chatId)
     setMessages(response.data)
@@ -55,24 +55,17 @@ const Chat = (props: Props) => {
   useEffect(() => {
     if (pathname) {
       setChatId(pathname.replace('/chat/', ''))
-      getMessages()
+      getMessages(pathname.replace('/chat/', ''))
     }
   }, [pathname])
 
   const getAnswer =  async () => {
     if (!userInput) return;
     setThinking(true);
-    //setMessages((prevMessages) => [...prevMessages, { user: userInput }]);
-
     await generateMessage(topicName, userInput, chatId)
-
-    // setMessages((prevMessages) => [
-    //   ...prevMessages,
-    //   { system: response.data.answer },
-    // ]);
     setUserInput("");
     setThinking(false);
-    getMessages()
+    getMessages(pathname.replace('/chat/', ''))
   };
 
   return (
