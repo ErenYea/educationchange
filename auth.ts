@@ -53,7 +53,13 @@ export const options = {
       return token;
     },
     session: ({ session, token, user }) => {
-      return { ...session, id: token.sub };
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+        },
+      };
     },
 
     async signIn({ user, credentials }) {
@@ -67,6 +73,5 @@ export const options = {
 
   pages: {
     signIn: "/login",
-  }
-
+  },
 } satisfies AuthOptions;

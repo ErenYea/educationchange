@@ -16,14 +16,13 @@ import { usePathname } from "next/navigation";
 
 type Props = {};
 
-const Chat = (props: Props) => {
-  
+const Chats = (props: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userChats, setUserChats] = useState<Chat[]>([]);
   const [userTopics, setUserTopics] = useState<Topic[]>([]);
   const session = useSession();
   const pathname = usePathname();
-  
+
   const [userInput, setUserInput] = useState("");
   const [chatId, setChatId] = useState("");
   const [prompt, setPrompt] = useState("");
@@ -35,18 +34,18 @@ const Chat = (props: Props) => {
   const [chatIdToDelete, setChatIdToDelete] = useState<string>("");
 
   const createChat = async () => {
-    await createAChat(session.data?.id);
+    await createAChat(session.data?.user.id || "");
     getChats();
   };
 
   const getChats = async () => {
-    const response = await getAllChats(session.data?.id);
+    const response = await getAllChats(session.data?.user.id || "");
     setUserChats(response.data);
     return response;
   };
 
   const getTopics = async () => {
-    const response = await getAllTopics(session.data?.id);
+    const response = await getAllTopics(session.data?.user.id || "");
     setUserTopics(response.data);
     return response;
   };
@@ -59,7 +58,7 @@ const Chat = (props: Props) => {
 
   useEffect(() => {
     if (userTopics) {
-      setTopicName(userTopics[0]?.name)
+      setTopicName(userTopics[0]?.name);
     }
   }, [userTopics]);
 
@@ -96,19 +95,22 @@ const Chat = (props: Props) => {
     setShowPromptUpdater(false);
   };
 
-  const confirmDeletion = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, chatId: string) => {
+  const confirmDeletion = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    chatId: string
+  ) => {
     setShowDeletePopup(true);
-    console.log(chatId)
+    console.log(chatId);
     setChatIdToDelete(chatId);
   };
 
   const deleteChat = async () => {
-    if (!chatIdToDelete) return
-    await deleteAChat(chatIdToDelete)
+    if (!chatIdToDelete) return;
+    await deleteAChat(chatIdToDelete);
     setShowDeletePopup(false);
-    setChatIdToDelete("")
+    setChatIdToDelete("");
     getChats();
-  }
+  };
 
   return (
     <div className="flex items-center h-screen">
@@ -225,10 +227,16 @@ const Chat = (props: Props) => {
                 This will delete <strong>Chat 1</strong>.
                 <div className="mt-5 sm:mt-4">
                   <div className="mt-5 flex flex-col gap-3 sm:mt-4 sm:flex-row-reverse">
-                    <div onClick={deleteChat} className="flex w-full gap-2 items-center justify-center hover:bg-red-500 py-2 px-6 border border-red-400 rounded-md cursor-pointer">
+                    <div
+                      onClick={deleteChat}
+                      className="flex w-full gap-2 items-center justify-center hover:bg-red-500 py-2 px-6 border border-red-400 rounded-md cursor-pointer"
+                    >
                       Delete
                     </div>
-                    <div onClick={() => setShowDeletePopup(false)} className="flex w-full gap-2 items-center justify-center hover:bg-gray-500 py-2 px-6 border border-gray-400 rounded-md cursor-pointer">
+                    <div
+                      onClick={() => setShowDeletePopup(false)}
+                      className="flex w-full gap-2 items-center justify-center hover:bg-gray-500 py-2 px-6 border border-gray-400 rounded-md cursor-pointer"
+                    >
                       Cancel
                     </div>
                   </div>
@@ -255,7 +263,7 @@ const Chat = (props: Props) => {
                 <option key={item.id} value={item.name}>
                   {" "}
                   {item.name
-                    .replace(session.data?.user?.email, "")
+                    .replace(session.data?.user?.email || "", "")
                     .replaceAll("-", " ")
                     .trim()}{" "}
                 </option>
@@ -427,4 +435,4 @@ const Chat = (props: Props) => {
   );
 };
 
-export default Chat;
+export default Chats;
