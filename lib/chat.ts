@@ -56,6 +56,27 @@ export async function createAChat(userId: string) {
     }
 }
 
+export async function deleteAChat(chatId: string) {
+    try {
+        await db.message.deleteMany({
+            where: {
+                chatId: chatId,
+            },
+        });
+
+        await db.chat.delete({
+            where: {
+                id: chatId,
+            },
+        });
+
+        return { success: true, message: "Chat and associated messages deleted successfully" };
+    } catch (error) {
+        console.log(error);
+        return { success: false, message: "Error deleting chat and messages" };
+    }
+}
+
 export async function getAllChats(userId: string) {
     const chats = await db.chat.findMany({
         where: { userId: userId },
