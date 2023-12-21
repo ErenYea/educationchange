@@ -2,80 +2,130 @@
 
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { createAChat, getAllChats } from "@/lib/chat";
+import {
+  createAChat,
+  deleteAChat,
+  getAllChats,
+  getAllTopics,
+  getAllMessages,
+  generateMessage,
+} from "@/lib/chat";
 import { useSession } from "next-auth/react";
-import { Chat } from "@prisma/client";
+import { useRouter } from 'next/navigation';
+import { Chat, Message, Topic } from "@prisma/client";
+import { usePathname } from "next/navigation";
 
 type Props = {};
 
 const Chat = (props: Props) => {
+  
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [userChats, setUserChats] = useState<Chat[]>([]);
+  const [userTopics, setUserTopics] = useState<Topic[]>([]);
+  const session = useSession();
+  const pathname = usePathname();
+  const router = useRouter();
+  
   const [userInput, setUserInput] = useState("");
+  const [chatId, setChatId] = useState("");
+  const [prompt, setPrompt] = useState("");
+  const [promptUpdate, setPromptUpdate] = useState(false);
+  const [topicName, setTopicName] = useState<string>("");
   const [thinking, setThinking] = useState(false);
   const [showPromptUpdater, setShowPromptUpdater] = useState(false);
-  const [messages, setMessages] = useState<
-    { user?: string; system?: string }[]
-  >([]);
-  const [userChats, setUserChats] = useState<Chat[]>([])
-  const session = useSession();
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [chatIdToDelete, setChatIdToDelete] = useState<string>("");
+
+  useEffect(() => {
+    console.log(userChats)
+    if(userChats.length !== 0){
+      router.push(`/chat/${userChats[0].id}`);
+    }
+  }, [userChats])
 
   const createChat = async () => {
-    const response = await createAChat(session.data?.id)
-    console.log(response)
-  }
+    const response = await createAChat(session.data?.id);
+    getChats();
+  };
 
   const getChats = async () => {
-    const response = await getAllChats(session.data?.id)
-    setUserChats(response.data)
-    return response
-  }
+    const response = await getAllChats(session.data?.id);
+    setUserChats(response.data);
+    return response;
+  };
+
+  const getTopics = async () => {
+    const response = await getAllTopics(session.data?.id);
+    setUserTopics(response.data);
+    return response;
+  };
+
+  const getMessages = async (chatId: string) => {
+    const response = await getAllMessages(chatId);
+    setMessages(response.data);
+    return response;
+  };
+
+  useEffect(() => {
+    if (userTopics) {
+      setTopicName(userTopics[0]?.name)
+    }
+  }, [userTopics]);
 
   useEffect(() => {
     if (session.data) {
-      const chats = getChats()
-      console.log(chats)
+      getChats();
+      getTopics();
     }
-  }, [session])
+  }, [session]);
 
-  const getAnswer = () => {
+  useEffect(() => {
+    if (pathname) {
+      setChatId(pathname.replace("/chat/", ""));
+      getMessages(pathname.replace("/chat/", ""));
+    }
+  }, [pathname]);
+
+  const getAnswer = async () => {
     if (!userInput) return;
     setThinking(true);
-    setMessages((prevMessages) => [...prevMessages, { user: userInput }]);
-    const requestBody = {
-      namespace: "letter b",
-      query: userInput,
-      model: "gpt-3.5-turbo",
-      openAIKey: process.env.NEXT_PUBLIC_DEFAULT_OPENAI__API_KEY,
-      prompt: "",
-      temperature: 0.5,
-      maxTokens: 255,
-    };
-
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/query`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { system: data.answer },
-        ]);
-        setUserInput("");
-        setThinking(false);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    await generateMessage(
+      topicName,
+      userInput,
+      chatId,
+      promptUpdate ? prompt : ""
+    );
+    setUserInput("");
+    setThinking(false);
+    getMessages(pathname.replace("/chat/", ""));
   };
+
+  const updatePrompt = () => {
+    setPromptUpdate(true);
+    setShowPromptUpdater(false);
+  };
+
+  const confirmDeletion = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, chatId: string) => {
+    setShowDeletePopup(true);
+    console.log(chatId)
+    setChatIdToDelete(chatId);
+  };
+
+  const deleteChat = async () => {
+    if (!chatIdToDelete) return
+    await deleteAChat(chatIdToDelete)
+    setShowDeletePopup(false);
+    setChatIdToDelete("")
+    getChats();
+  }
 
   return (
     <div className="flex items-center h-screen">
       <div className="flex w-[20vw] flex-col space-y-4 items-center left-0 bottom-0 h-screen overflow-visible z-30 border-r border-black/10 dark:border-white/25 bg-white dark:bg-[#00121f] pt-4">
-
-        <div onClick={createChat} className="p-2 w-1/2 border border-primary bg-white dark:bg-[#00121f] hover:bg-white/20 hover:bg-primary shadow-lg rounded-lg flex items-center justify-center z-20 cursor-pointer">
+        <div
+          onClick={createChat}
+          className="p-2 w-1/2 border border-primary bg-white dark:bg-[#00121f] hover:bg-white/20 hover:bg-primary shadow-lg rounded-lg flex items-center justify-center z-20 cursor-pointer"
+        >
           <svg
             stroke="currentColor"
             fill="currentColor"
@@ -92,75 +142,136 @@ const Chat = (props: Props) => {
           New Chat
         </div>
 
-        {
-          userChats?.map((chat, ind) => (
-            <div className="w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800">
-              <Link className="flex flex-col flex-1 min-w-0 p-4" href={`/chat/${chat.id}`}>
-                <div className="flex items-center gap-2">
-                  <svg
-                    stroke="currentColor"
-                    fill="currentColor"
-                    strokeWidth="0"
-                    viewBox="0 0 24 24"
-                    className="text-xl"
-                    height="1em"
-                    width="1em"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path fill="none" d="M0 0h24v24H0V0z"></path>
-                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"></path>
-                  </svg>
-                  <p> Chat { ind+1 } </p>
-                </div>
-                <div className="grid-cols-2 text-xs opacity-50 whitespace-nowrap">
-                  { chat.id }
-                </div>
-              </Link>
-              <div className="opacity-0 group-hover:opacity-100 flex items-center justify-center bg-gradient-to-l from-white dark:from-black to-transparent z-10 transition-opacity">
-                <button className="p-0 hover:text-blue-300" type="button">
-                  <svg
-                    stroke="currentColor"
-                    fill="none"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    height="1em"
-                    width="1em"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                </button>
-                <button className="p-5 hover:text-red-700" type="button">
-                  <svg
-                    stroke="currentColor"
-                    fill="none"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    height="1em"
-                    width="1em"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                  </svg>
-                </button>
+        {userChats?.map((chat, ind) => (
+          <div
+            key={ind}
+            className={`w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800 ${
+              chat.id === chatId &&
+              "bg-gradient-to-r from-white dark:from-black to-transparent"
+            }`}
+          >
+            <Link
+              className="flex flex-col flex-1 min-w-0 p-4"
+              href={`/chat/${chat.id}`}
+            >
+              <div className="flex items-center gap-2">
+                <svg
+                  stroke="currentColor"
+                  fill="currentColor"
+                  strokeWidth="0"
+                  viewBox="0 0 24 24"
+                  className="text-xl"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path fill="none" d="M0 0h24v24H0V0z"></path>
+                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"></path>
+                </svg>
+                <p> Chat {ind + 1} </p>
+              </div>
+              <div className="grid-cols-2 text-xs opacity-50 whitespace-nowrap">
+                {chat.id}
+              </div>
+            </Link>
+            <div className="opacity-0 group-hover:opacity-100 flex items-center justify-center bg-gradient-to-l from-white dark:from-black to-transparent z-10 transition-opacity">
+              <div className="p-0 hover:text-blue-300 cursor-pointer">
+                <svg
+                  stroke="currentColor"
+                  fill="none"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </div>
+              <div
+                className="p-5 hover:text-red-700 cursor-pointer"
+                onClick={(event) => confirmDeletion(event, chat.id)}
+              >
+                <svg
+                  stroke="currentColor"
+                  fill="none"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
               </div>
             </div>
-          ))
-        }
+          </div>
+        ))}
 
+        {showDeletePopup && (
+          <div className="fixed inset-0 z-50 flex justify-center py-25 overflow-auto cursor-pointer md:z-40 bg-black/50 backdrop-blur-sm">
+            <div className="relative w-[90vw] my-auto flex flex-col items-center justify-center space-y-4 h-fit max-w-lg rounded-xl bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 shadow-xl dark:shadow-primary/50 focus:outline-none cursor-auto">
+              <div className="px-4 pb-4 pt-5 sm:p-6 flex items-center justify-between border-b border-black/10 dark:border-white/10 w-full">
+                <div className="flex">
+                  <div className="flex items-center">
+                    <div className="flex flex-col gap-1">
+                      <h2 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
+                        Delete chat ?
+                      </h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="p-4 sm:p-6 items-center justify-center text-center">
+                This will delete <strong>Chat 1</strong>.
+                <div className="mt-5 sm:mt-4">
+                  <div className="mt-5 flex flex-col gap-3 sm:mt-4 sm:flex-row-reverse">
+                    <div onClick={deleteChat} className="flex w-full gap-2 items-center justify-center hover:bg-red-500 py-2 px-6 border border-red-400 rounded-md cursor-pointer">
+                      Delete
+                    </div>
+                    <div onClick={() => setShowDeletePopup(false)} className="flex w-full gap-2 items-center justify-center hover:bg-gray-500 py-2 px-6 border border-gray-400 rounded-md cursor-pointer">
+                      Cancel
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <section className="flex flex-col flex-1 items-center w-full max-w-7xl h-full lg:min-h-[70vh] pt-5 2xl:pt-20 2xl:pl-32 px-10 2xl:px-0">
         <div className="flex items-center justify-center w-full">
-          <h1 className="text-3xl font-bold text-center w-3/4">
+          <div className="w-1/4">
+            <select
+              required
+              className="text-white bg-[#00121f] border p-2 rounded-md w-full"
+              value={topicName}
+              onChange={(event) => setTopicName(event.target.value)}
+            >
+              <option value="" disabled>
+                Select Topic
+              </option>
+              {userTopics.map((item) => (
+                <option key={item.id} value={item.name}>
+                  {" "}
+                  {item.name
+                    .replace(session.data?.user?.email, "")
+                    .replaceAll("-", " ")
+                    .trim()}{" "}
+                </option>
+              ))}
+            </select>
+          </div>
+          <h1 className="text-2xl font-bold text-center w-2/4">
             <div>
               <span>
                 Chat with your Digital Twin -{" "}
@@ -172,7 +283,7 @@ const Chat = (props: Props) => {
               and chat with them
             </div>
           </h1>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-center w-1/4">
             <button className="text-sm text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 text-black dark:text-white bg-transparent disabled:opacity-25 gap-x-10 group-hover:visible hover:text-red-500 transition-[colors,opacity] p-1">
               <p className="flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-center text-white transition-colors bg-black border border-black rounded-md outline-none disabled:opacity-80 focus:ring ring-primary/10 dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 sm:px-4 sm:py-2">
                 Share
@@ -197,59 +308,71 @@ const Chat = (props: Props) => {
               Customize
             </button>
 
-            {
-              showPromptUpdater && (
-                <div className="fixed inset-0 z-50 flex justify-center py-25 overflow-auto cursor-pointer md:z-40 bg-black/50 backdrop-blur-sm">
-                  <div className="relative w-[90vw] my-auto flex flex-col items-center justify-center space-y-4 h-fit max-w-2xl rounded-xl bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 p-10 shadow-xl dark:shadow-primary/50 focus:outline-none cursor-auto">
-                    <div className="text-2xl hover:bg-white/10 rounded-full p-1 cursor-pointer absolute right-4 top-4" onClick={() => setShowPromptUpdater(false)}>
-                      <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0z"></path><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
-                    </div>
-                    <h2
-                      className="m-0 text-2xl font-bold border-b border-grey"
+            {showPromptUpdater && (
+              <div className="fixed inset-0 z-50 flex justify-center py-25 overflow-auto cursor-pointer md:z-40 bg-black/50 backdrop-blur-sm">
+                <div className="relative w-[90vw] my-auto flex flex-col items-center justify-center space-y-4 h-fit max-w-2xl rounded-xl bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 p-10 shadow-xl dark:shadow-primary/50 focus:outline-none cursor-auto">
+                  <div
+                    className="text-2xl hover:bg-white/10 rounded-full p-1 cursor-pointer absolute right-4 top-4"
+                    onClick={() => setShowPromptUpdater(false)}
+                  >
+                    <svg
+                      stroke="currentColor"
+                      fill="currentColor"
+                      strokeWidth="0"
+                      viewBox="0 0 24 24"
+                      height="1em"
+                      width="1em"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      Customize your brain
-                    </h2>
-                    <p className="">Edit Base Prompt Here</p>
-                    <textarea className="w-full min-h-[200px] max-h-[500px] px-4 py-2 border rounded-md bg-gray-50 dark:bg-gray-900 border-black/10 dark:border-white/25 p-auto" />
-                    <div className="flex justify-between gap-3">
-                      <button className="disabled:opacity-80 text-center font-medium focus:ring ring-primary/10 outline-none gap-2 dark:border-white text-black dark:text-white focus:bg-black dark:focus:bg-white dark:hover:bg-white dark:hover:text-black focus:text-white dark:focus:text-black transition-colors z-20 flex items-center grow justify-center px-4 py-2 text-xl bg-white border rounded-lg shadow-lg align-center border-primary dark:bg-black hover:text-white hover:bg-black top-1">
-                        <p>Apply</p>
-                      </button>
-                    </div>
+                      <path fill="none" d="M0 0h24v24H0z"></path>
+                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+                    </svg>
+                  </div>
+                  <h2 className="m-0 text-2xl font-bold border-b border-grey">
+                    Customize your brain
+                  </h2>
+                  <p className="">Edit Base Prompt Here</p>
+                  <textarea
+                    className="w-full min-h-[200px] max-h-[500px] px-4 py-2 border rounded-md bg-gray-50 dark:bg-gray-900 border-black/10 dark:border-white/25 p-auto"
+                    value={prompt}
+                    onChange={(event) => setPrompt(event.target.value)}
+                  />
+                  <div className="flex justify-between gap-3">
+                    <button
+                      onClick={updatePrompt}
+                      className="disabled:opacity-80 text-center font-medium focus:ring ring-primary/10 outline-none gap-2 dark:border-white text-black dark:text-white focus:bg-black dark:focus:bg-white dark:hover:bg-white dark:hover:text-black focus:text-white dark:focus:text-black transition-colors z-20 flex items-center grow justify-center px-4 py-2 text-xl bg-white border rounded-lg shadow-lg align-center border-primary dark:bg-black hover:text-white hover:bg-black top-1"
+                    >
+                      <p>Apply</p>
+                    </button>
                   </div>
                 </div>
-              )
-            }
-
+              </div>
+            )}
           </div>
         </div>
 
         <div className="flex-1 flex flex-col mt-8 w-full shadow-md dark:shadow-primary/25 hover:shadow-xl transition-shadow rounded-xl overflow-hidden bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 p-12 pt-10 max-h-[70vh]">
           <div className="flex flex-1 flex-col overflow-hidden">
             <div className="flex flex-col flex-1 overflow-y-auto">
-              {/* <div className="text-center opacity-50">
-                Ask a question, or describe a task.
-              </div> */}
-
               <div className="flex flex-col gap-3 p-4">
                 {messages.map((message, index) => (
                   <div
                     key={index}
                     className={`flex flex-col items-${
-                      message.user ? "end" : "start"
+                      message.type === "user" ? "end" : "start"
                     }`}
                   >
                     <div
                       className={`py-3 px-5 w-fit bg-opacity-60 max-w-[60%] text-black items-${
-                        message.user ? "start" : "end"
+                        message.type === "user" ? "start" : "end"
                       } rounded-md flex flex-col overflow-hidden scroll-pb-32 ${
-                        message.user
+                        message.type === "user"
                           ? "dark:bg-white"
                           : "bg-opacity-60 dark:bg-purple-100"
                       }`}
                     >
                       <div>
-                        <p>{message.user || message.system}</p>
+                        <p>{message.text}</p>
                       </div>
                     </div>
                   </div>

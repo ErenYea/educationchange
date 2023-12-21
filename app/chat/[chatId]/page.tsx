@@ -35,7 +35,7 @@ const Chat = (props: Props) => {
   const [chatIdToDelete, setChatIdToDelete] = useState<string>("");
 
   const createChat = async () => {
-    const response = await createAChat(session.data?.id);
+    await createAChat(session.data?.id);
     getChats();
   };
 
@@ -251,7 +251,7 @@ const Chat = (props: Props) => {
               <option value="" disabled>
                 Select Topic
               </option>
-              {userTopics.map((item, ind) => (
+              {userTopics.map((item) => (
                 <option key={item.id} value={item.name}>
                   {" "}
                   {item.name
