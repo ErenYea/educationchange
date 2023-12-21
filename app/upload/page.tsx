@@ -11,17 +11,7 @@ type Props = {};
 
 const Chat = (props: Props) => {
   const session = useSession();
-
-  // const check2 = async () => {
-  //   const kuch = await check(session.data?.id)
-  // }
-
-  // useEffect(() => {
-  //   if(session.data) {
-  //     check2()
-  //   }
-  // }, [session])
-
+  
   const [webUrlInput, setWebUrlInput] = useState<string>("");
   const [crawling, setCrawling] = useState<boolean>(false);
   const [topic, setTopic] = useState<string>("");
