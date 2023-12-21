@@ -12,6 +12,8 @@ type Props = {};
 const Chat = (props: Props) => {
   const [userInput, setUserInput] = useState("");
   const [chatId, setChatId] = useState("")
+  const [prompt, setPrompt] = useState("")
+  const [promptUpdate, setPromptUpdate] = useState(false)
   const [topicName, setTopicName] = useState<string>("")
   const [thinking, setThinking] = useState(false);
   const [showPromptUpdater, setShowPromptUpdater] = useState(false);
@@ -61,11 +63,16 @@ const Chat = (props: Props) => {
   const getAnswer =  async () => {
     if (!userInput) return;
     setThinking(true);
-    await generateMessage(topicName, userInput, chatId)
+    await generateMessage(topicName, userInput, chatId, promptUpdate ? prompt : "")
     setUserInput("");
     setThinking(false);
     getMessages(pathname.replace('/chat/', ''))
   };
+
+  const updatePrompt = () => {
+    setPromptUpdate(true)
+    setShowPromptUpdater(false)
+  }
 
   return (
     <div className="flex items-center h-screen">
@@ -216,9 +223,13 @@ const Chat = (props: Props) => {
                       Customize your brain
                     </h2>
                     <p className="">Edit Base Prompt Here</p>
-                    <textarea className="w-full min-h-[200px] max-h-[500px] px-4 py-2 border rounded-md bg-gray-50 dark:bg-gray-900 border-black/10 dark:border-white/25 p-auto" />
+                    <textarea 
+                      className="w-full min-h-[200px] max-h-[500px] px-4 py-2 border rounded-md bg-gray-50 dark:bg-gray-900 border-black/10 dark:border-white/25 p-auto"
+                      value={prompt}
+                      onChange={(event) => setPrompt(event.target.value)}
+                     />
                     <div className="flex justify-between gap-3">
-                      <button className="disabled:opacity-80 text-center font-medium focus:ring ring-primary/10 outline-none gap-2 dark:border-white text-black dark:text-white focus:bg-black dark:focus:bg-white dark:hover:bg-white dark:hover:text-black focus:text-white dark:focus:text-black transition-colors z-20 flex items-center grow justify-center px-4 py-2 text-xl bg-white border rounded-lg shadow-lg align-center border-primary dark:bg-black hover:text-white hover:bg-black top-1">
+                      <button onClick={updatePrompt} className="disabled:opacity-80 text-center font-medium focus:ring ring-primary/10 outline-none gap-2 dark:border-white text-black dark:text-white focus:bg-black dark:focus:bg-white dark:hover:bg-white dark:hover:text-black focus:text-white dark:focus:text-black transition-colors z-20 flex items-center grow justify-center px-4 py-2 text-xl bg-white border rounded-lg shadow-lg align-center border-primary dark:bg-black hover:text-white hover:bg-black top-1">
                         <p>Apply</p>
                       </button>
                     </div>
