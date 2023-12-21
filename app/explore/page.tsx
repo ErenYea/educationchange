@@ -13,7 +13,7 @@ type TopicDetails = {
   content: string;
 };
 
-const page = () => {
+const Page = () => {
   
   const session = useSession();
   const [userTopics, setUserTopics] = useState<Topic[]>([]);
@@ -109,4 +109,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
