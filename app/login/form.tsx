@@ -64,7 +64,7 @@ const Form = (props: Props) => {
         : !state?.success && (
             <p className="italic text-sm text-red-500">{state?.message}</p>
           )}
-      <Link href={"/signup"}> Don't have an account? Sign up </Link>
+      <Link href={"/signup"}> Don&apos;t have an account? Sign up </Link>
     </form>
   );
 };

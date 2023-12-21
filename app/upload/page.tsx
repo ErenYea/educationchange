@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useChatStore } from '@/stores/ChatStore'
+import { useChatStore } from "@/stores/ChatStore";
 import Link from "next/link";
 import FileUploader from "@/components/FileUploader";
 import { useSession } from "next-auth/react";
-import { uploadCrawler, check } from "@/lib/uploadCrawler";
+import { uploadCrawler } from "@/lib/uploadCrawler";
 
 type Props = {};
 
@@ -23,22 +23,29 @@ const Chat = (props: Props) => {
   // }, [session])
 
   const [webUrlInput, setWebUrlInput] = useState<string>("");
-  const [crawling, setCrawling] = useState<boolean>(false)
+  const [crawling, setCrawling] = useState<boolean>(false);
   const [topic, setTopic] = useState<string>("");
-  const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [state.showFileUploader, state.toggleShowFileUploader])
+  const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [
+    state.showFileUploader,
+    state.toggleShowFileUploader,
+  ]);
 
   const CrawlWebPage = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!webUrlInput) return;
-    
-    setCrawling(true)
-    const response = await uploadCrawler(session.data?.id, topic, session.data?.user?.email || "" , webUrlInput)
-    console.log(response)
-    setWebUrlInput('')
-    setTopic('')
-    setCrawling(false);
 
-  }
+    setCrawling(true);
+    const response = await uploadCrawler(
+      session.data?.user.id || "",
+      topic,
+      session.data?.user?.email || "",
+      webUrlInput
+    );
+    console.log(response);
+    setWebUrlInput("");
+    setTopic("");
+    setCrawling(false);
+  };
 
   return (
     <div className="flex flex-col items-center pt-20 h-screen">
@@ -49,7 +56,10 @@ const Chat = (props: Props) => {
         </p>
       </div>
 
-      <div onClick={toggleShowFileUploader} className="text-sm cursor-pointer disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 border border-black dark:border-white bg-white dark:bg-[#00121f] text-black dark:text-white focus:bg-[#00121f] dark:focus:bg-white hover:bg-[#00121f] dark:hover:bg-white hover:text-white dark:hover:text-black focus:text-white dark:focus:text-black transition-colors py-2 px-4 shadow-none m-auto my-10 w-[15%]">
+      <div
+        onClick={toggleShowFileUploader}
+        className="text-sm cursor-pointer disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 border border-black dark:border-white bg-white dark:bg-[#00121f] text-black dark:text-white focus:bg-[#00121f] dark:focus:bg-white hover:bg-[#00121f] dark:hover:bg-white hover:text-white dark:hover:text-black focus:text-white dark:focus:text-black transition-colors py-2 px-4 shadow-none m-auto my-10 w-[15%]"
+      >
         <svg
           stroke="currentColor"
           fill="currentColor"
@@ -64,13 +74,11 @@ const Chat = (props: Props) => {
         </svg>{" "}
       </div>
 
-      {
-        showFileUploader && (
-          <div className="w-full">
-            <FileUploader />
-          </div>
-        )
-      }
+      {showFileUploader && (
+        <div className="w-full">
+          <FileUploader />
+        </div>
+      )}
 
       <div className="flex items-center justify-center m-5">
         <hr className="border-t border-gray-300 w-12" />
@@ -81,7 +89,10 @@ const Chat = (props: Props) => {
       <div className="w-full">
         <div className="flex justify-center gap-5 px-6">
           <div className="max-w-xl w-full">
-            <form onSubmit={CrawlWebPage} className="flex-col justify-center gap-5">
+            <form
+              onSubmit={CrawlWebPage}
+              className="flex-col justify-center gap-5"
+            >
               <div className="shadow-md dark:shadow-primary/25 hover:shadow-xl transition-shadow rounded-xl overflow-hidden bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 h-32 flex gap-5 justify-center items-center px-5">
                 <div className="text-center max-w-sm w-full flex flex-col gap-5 items-center">
                   <div className="flex flex-col w-full space-y-4">
@@ -93,7 +104,7 @@ const Chat = (props: Props) => {
                       onChange={(event) => setTopic(event.target.value)}
                       disabled={crawling}
                       required
-                      />
+                    />
                     <input
                       className="w-full bg-gray-50 dark:bg-gray-900 px-4 py-2 border rounded-md border-black/10 dark:border-white/25"
                       placeholder="Insert website URL"
@@ -106,8 +117,12 @@ const Chat = (props: Props) => {
                   </div>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-5">
-                  <button type="submit" disabled={crawling} className="px-8 py-3 text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-[#00121f] border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200">
-                    { crawling ? 'Crawling...' : 'Crawl' }{" "}
+                  <button
+                    type="submit"
+                    disabled={crawling}
+                    className="px-8 py-3 text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-[#00121f] border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200"
+                  >
+                    {crawling ? "Crawling..." : "Crawl"}{" "}
                   </button>
                 </div>
               </div>
