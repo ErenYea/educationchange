@@ -224,7 +224,7 @@ const Chats = (props: Props) => {
                 </div>
               </div>
               <div className="p-4 sm:p-6 items-center justify-center text-center">
-                This will delete <strong>Chat 1</strong>.
+                This will delete <strong>the selected Chat</strong>.
                 <div className="mt-5 sm:mt-4">
                   <div className="mt-5 flex flex-col gap-3 sm:mt-4 sm:flex-row-reverse">
                     <div

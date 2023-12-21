@@ -97,3 +97,27 @@ export async function getAllMessages(chatId: string) {
     });
     return { success: true, message: "successful", data: messages };
 }
+
+export async function getTopicDetails(topicName: string) {
+    try {
+        const requestBody = {
+            "namespace": [
+                topicName
+            ]
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/fetch`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        })
+
+        const data = await response.json()
+        return { success: true, message: "successful", data: data };
+
+    } catch (e) {
+        return { success: false, message: "error" };
+    }
+}
