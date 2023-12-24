@@ -6,7 +6,7 @@ export async function addFile(id: string, email: string, uploadedFiles: Array<st
     try {
         const filePromises = uploadedFiles.map(async (file: any) => {
             const requestBody = {
-                namespace: `${email}-${file.Location}`,
+                namespace: `${email}-${file.Location.split('/')[file.Location.split('/').length-1]}`,
                 metadata: {
                     type: "fileURL",
                     link: file.Location
