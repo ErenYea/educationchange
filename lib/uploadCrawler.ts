@@ -39,11 +39,3 @@ export async function uploadCrawler(id: string, topicName: string, email: string
         return { success: false, message: "error" };
     }
 }
-
-// export async function check(id:string) {
-//     const response = await db.user.findUnique({
-//         where: { id: id }
-//     })
-//     console.log(response)
-//     return response
-// }

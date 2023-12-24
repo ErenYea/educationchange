@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useChatStore } from "@/stores/ChatStore";
 import Link from "next/link";
 import FileUploader from "@/components/FileUploader";

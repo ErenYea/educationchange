@@ -2,10 +2,13 @@
 
 import React, { useRef, useState } from "react";
 import { useChatStore } from '@/stores/ChatStore'
-import AWS from 'aws-sdk';
+import { useSession } from "next-auth/react";
+import { fileUploader } from "@/lib/uploadFile";
+import { addFile } from "@/lib/addFile";
 
 const FileUploader = () => {
 
+  const session = useSession();
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [state.showFileUploader, state.toggleShowFileUploader])
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
@@ -32,31 +35,14 @@ const FileUploader = () => {
 
     setUploading(true);
 
-    const s3 = new AWS.S3({
-      accessKeyId: process.env.NEXT_PUBLIC_AWS_BUCKET_ACCESS_KEY_ID,
-      secretAccessKey: process.env.NEXT_PUBLIC_AWS_BUCKET_SECRET_ACCESS_KEY,
-      region: process.env.NEXT_PUBLIC_AWS_BUCKET_REGION
-    });
-
-    const promises: Promise<any>[] = [];
-    Array.from(selectedFiles).forEach((file) => {
-      const params = {
-        Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
-        Key: `${Date.now()}_${file.name}`,
-        Body: file,
-        ACL: 'public-read'
-      };
-
-      const uploadPromise = s3.upload(params).promise();
-      promises.push(uploadPromise);
-    });
-
     try {
-      const uploadedFiles = await Promise.all(promises);
-      uploadedFiles.forEach((file) => {
-        console.log('Uploaded File URL:', file.Location);
-      });
-
+      const uploadedFiles = await fileUploader(selectedFiles)
+      const response2 = await addFile(
+        session.data?.user.id || "",
+        session.data?.user?.email || "",
+        uploadedFiles
+      );
+      console.log(response2)
       setTopic('');
       setSelectedFiles(null);
       setUploading(false);
@@ -64,6 +50,7 @@ const FileUploader = () => {
       console.error('Error uploading files:', error);
       setUploading(false);
     }
+    
   };
   
   return (
