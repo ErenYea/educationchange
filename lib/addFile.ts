@@ -25,13 +25,12 @@ export async function addFile(id: string, email: string, uploadedFiles: Array<st
 
             const data = await response.json();
 
-            if (!data.error) {
+            try {
               await db.topic.create({
                   data: { name: `${email}-${file.Location.split('/')[file.Location.split('/').length-1]}`, userId: id },
               });
-  
               return { success: true, message: "successful", data: data };
-            } else {
+            } catch {
               return { success: false, message: "unsuccessful", error: data.error };
             }
 

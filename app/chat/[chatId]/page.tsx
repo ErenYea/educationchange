@@ -11,8 +11,13 @@ import {
   generateMessage,
 } from "@/lib/chat";
 import { useSession } from "next-auth/react";
-import { Chat, Message, Topic } from "@prisma/client";
+import { Chat, Message } from "@prisma/client";
 import { usePathname } from "next/navigation";
+
+type Topic = {
+  namespace: string;
+  content: string;
+};
 
 type Props = {};
 
@@ -46,6 +51,7 @@ const Chats = (props: Props) => {
 
   const getTopics = async () => {
     const response = await getAllTopics(session.data?.user.id || "");
+    console.log(response.data)
     setUserTopics(response.data);
     return response;
   };
@@ -58,7 +64,7 @@ const Chats = (props: Props) => {
 
   useEffect(() => {
     if (userTopics) {
-      setTopicName(userTopics[0]?.name);
+      setTopicName(userTopics[0]?.namespace);
     }
   }, [userTopics]);
 
@@ -260,9 +266,9 @@ const Chats = (props: Props) => {
                 Select Topic
               </option>
               {userTopics.length && userTopics.map((item) => (
-                <option key={item.id} value={item.name}>
+                <option key={item.namespace} value={item.namespace}>
                   {" "}
-                  {item.name
+                  {item.namespace
                     ?.replace(session.data?.user?.email || "", "")
                     .replaceAll("-", " ")
                     .trim()}{" "}
