@@ -256,10 +256,10 @@ const Chats = (props: Props) => {
               value={topicName}
               onChange={(event) => setTopicName(event.target.value)}
             >
-              <option value="" disabled>
+              <option key="" value="" disabled>
                 Select Topic
               </option>
-              {userTopics.map((item) => (
+              {userTopics.length && userTopics.map((item) => (
                 <option key={item.id} value={item.name}>
                   {" "}
                   {item.name
