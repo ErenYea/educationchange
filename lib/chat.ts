@@ -85,10 +85,12 @@ export async function getAllChats(userId: string) {
 }
 
 export async function getAllTopics(userId: string) {
-    const topics = await db.topic.findMany({
+    const topicsResponse = await db.topic.findMany({
         where: { userId: userId },
     });
-    return { success: true, message: "successful", data: topics };
+    const topics = topicsResponse.map(topic => topic.name)
+    const details = await getTopicDetails(topics)
+    return { success: true, message: "successful", data: details };
 }
 
 export async function getAllMessages(chatId: string) {
@@ -98,12 +100,10 @@ export async function getAllMessages(chatId: string) {
     return { success: true, message: "successful", data: messages };
 }
 
-export async function getTopicDetails(topicName: string) {
+export async function getTopicDetails(topics: String[]) {
     try {
         const requestBody = {
-            "namespace": [
-                topicName
-            ]
+            "namespace": topics
         }
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/fetch`, {
@@ -115,7 +115,7 @@ export async function getTopicDetails(topicName: string) {
         })
 
         const data = await response.json()
-        return { success: true, message: "successful", data: data };
+        return data
 
     } catch (e) {
         return { success: false, message: "error" };

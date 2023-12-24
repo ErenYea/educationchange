@@ -5,7 +5,6 @@ import db from "./db";
 export async function addFile(id: string, email: string, uploadedFiles: Array<string>) {
     try {
         const filePromises = uploadedFiles.map(async (file: any) => {
-            console.log(file)
             const requestBody = {
                 namespace: `${email}-${file.Location}`,
                 metadata: {
@@ -41,7 +40,6 @@ export async function addFile(id: string, email: string, uploadedFiles: Array<st
         const results = await Promise.all(filePromises);
         return results;
     } catch (error) {
-        console.error(error);
         return { success: false, message: "error" };
     }
 }
