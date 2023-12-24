@@ -137,7 +137,7 @@ const Chats = (props: Props) => {
 
         {userChats?.map((chat, ind) => (
           <div
-            key={ind}
+            key={chat.id}
             className={`w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800 ${
               chat.id === chatId &&
               "bg-gradient-to-r from-white dark:from-black to-transparent"
@@ -224,7 +224,7 @@ const Chats = (props: Props) => {
                 </div>
               </div>
               <div className="p-4 sm:p-6 items-center justify-center text-center">
-                This will delete <strong>the selected Chat</strong>.
+                This will delete the selected Chat.
                 <div className="mt-5 sm:mt-4">
                   <div className="mt-5 flex flex-col gap-3 sm:mt-4 sm:flex-row-reverse">
                     <div
@@ -263,7 +263,7 @@ const Chats = (props: Props) => {
                 <option key={item.id} value={item.name}>
                   {" "}
                   {item.name
-                    .replace(session.data?.user?.email || "", "")
+                    ?.replace(session.data?.user?.email || "", "")
                     .replaceAll("-", " ")
                     .trim()}{" "}
                 </option>

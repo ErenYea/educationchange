@@ -50,7 +50,7 @@ const Page = () => {
               >
                 { topic.namespace.replace(session.data?.user?.email || "", "").replaceAll("-", " ").trim()}
               </span>
-              <div className="flex gap-2 ">
+              <div className="flex gap-2">
                 <div
                   onClick={() => showDetails(topic.namespace)}
                   className="px-8 py-3 text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-[#00121f] border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-400 transition-colors cursor-pointer"
