@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { useChatStore } from '@/stores/ChatStore'
+import AWS from 'aws-sdk';
 
 const FileUploader = () => {
 
@@ -25,40 +26,46 @@ const FileUploader = () => {
     });
   };  
 
-  const UploadFiles = (event: React.FormEvent<HTMLFormElement>) => {
+  const UploadFiles = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!topic || !selectedFiles) return;
-    setUploading(true)
 
-    const requestBody = {
-        namespace: topic,
-        metadata: {
-            type: "fileURL",
-            link: selectedFiles[0]
-        },
-        fileURL: selectedFiles[0],
-        openAIKey: process.env.NEXT_PUBLIC_DEFAULT_OPENAI__API_KEY,
-    }
-  
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/embeddings/create`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data)
-      setTopic('')
-      setSelectedFiles(null)
-      setUploading(false);
-    })
-    .catch(error => {
-      console.error('Error:', error);
+    setUploading(true);
+
+    const s3 = new AWS.S3({
+      accessKeyId: process.env.NEXT_PUBLIC_AWS_BUCKET_ACCESS_KEY_ID,
+      secretAccessKey: process.env.NEXT_PUBLIC_AWS_BUCKET_SECRET_ACCESS_KEY,
+      region: process.env.NEXT_PUBLIC_AWS_BUCKET_REGION
     });
-  }
 
+    const promises: Promise<any>[] = [];
+    Array.from(selectedFiles).forEach((file) => {
+      const params = {
+        Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+        Key: `${Date.now()}_${file.name}`,
+        Body: file,
+        ACL: 'public-read'
+      };
+
+      const uploadPromise = s3.upload(params).promise();
+      promises.push(uploadPromise);
+    });
+
+    try {
+      const uploadedFiles = await Promise.all(promises);
+      uploadedFiles.forEach((file) => {
+        console.log('Uploaded File URL:', file.Location);
+      });
+
+      setTopic('');
+      setSelectedFiles(null);
+      setUploading(false);
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      setUploading(false);
+    }
+  };
+  
   return (
     <div className="absolute inset-0 backdrop-blur-sm bg-opacity-75 backdrop-filter flex items-center justify-center">
 
