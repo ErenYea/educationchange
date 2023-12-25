@@ -21,6 +21,7 @@ const Chats = (props: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userChats, setUserChats] = useState<Chat[]>([]);
   const [userTopics, setUserTopics] = useState<Topic[]>([]);
+  const [loadingChats, setLoadingChats] = useState(true)
   const session = useSession();
   const pathname = usePathname();
   const router = useRouter();
@@ -36,10 +37,10 @@ const Chats = (props: Props) => {
   const [chatIdToDelete, setChatIdToDelete] = useState<string>("");
 
   useEffect(() => {
-    console.log(userChats);
     if (userChats.length !== 0) {
       router.push(`/chat/${userChats[0].id}`);
     }
+    setLoadingChats(false)
   }, [userChats]);
 
   const createChat = async () => {
@@ -144,116 +145,133 @@ const Chats = (props: Props) => {
           New Chat
         </div>
 
-        {userChats?.map((chat, ind) => (
-          <div
-            key={ind}
-            className={`w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800 ${
-              chat.id === chatId &&
-              "bg-gradient-to-r from-white dark:from-black to-transparent"
-            }`}
-          >
-            <Link
-              className="flex flex-col flex-1 min-w-0 p-4"
-              href={`/chat/${chat.id}`}
-            >
-              <div className="flex items-center gap-2">
-                <svg
-                  stroke="currentColor"
-                  fill="currentColor"
-                  strokeWidth="0"
-                  viewBox="0 0 24 24"
-                  className="text-xl"
-                  height="1em"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path fill="none" d="M0 0h24v24H0V0z"></path>
-                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"></path>
-                </svg>
-                <p> Chat {ind + 1} </p>
-              </div>
-              <div className="grid-cols-2 text-xs opacity-50 whitespace-nowrap">
-                {chat.id}
-              </div>
-            </Link>
-            <div className="opacity-0 group-hover:opacity-100 flex items-center justify-center bg-gradient-to-l from-white dark:from-black to-transparent z-10 transition-opacity">
-              <div className="p-0 hover:text-blue-300 cursor-pointer">
-                <svg
-                  stroke="currentColor"
-                  fill="none"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  height="1em"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
-              </div>
-              <div
-                className="p-5 hover:text-red-700 cursor-pointer"
-                onClick={(event) => confirmDeletion(event, chat.id)}
-              >
-                <svg
-                  stroke="currentColor"
-                  fill="none"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  height="1em"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  <line x1="10" y1="11" x2="10" y2="17"></line>
-                  <line x1="14" y1="11" x2="14" y2="17"></line>
-                </svg>
-              </div>
+        { loadingChats ? 
+            <div className="flex justify-center space-x-4 items-center overflow-hidden">
+              <div>Loading your chats...</div>
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
             </div>
-          </div>
-        ))}
+            :
+            userChats.length > 0 ? (
+              <>
+                {
+                  userChats?.map((chat, ind) => (
+                    <div
+                      key={ind}
+                      className={`w-full border-b border-black/10 dark:border-white/25 last:border-none relative group flex overflow-x-hidden hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                        chat.id === chatId &&
+                        "bg-gradient-to-r from-white dark:from-black to-transparent"
+                      }`}
+                    >
+                      <Link
+                        className="flex flex-col flex-1 min-w-0 p-4"
+                        href={`/chat/${chat.id}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <svg
+                            stroke="currentColor"
+                            fill="currentColor"
+                            strokeWidth="0"
+                            viewBox="0 0 24 24"
+                            className="text-xl"
+                            height="1em"
+                            width="1em"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path fill="none" d="M0 0h24v24H0V0z"></path>
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"></path>
+                          </svg>
+                          <p> Chat {ind + 1} </p>
+                        </div>
+                        <div className="grid-cols-2 text-xs opacity-50 whitespace-nowrap">
+                          {chat.id}
+                        </div>
+                      </Link>
+                      <div className="opacity-0 group-hover:opacity-100 flex items-center justify-center bg-gradient-to-l from-white dark:from-black to-transparent z-10 transition-opacity">
+                        <div className="p-0 hover:text-blue-300 cursor-pointer">
+                          <svg
+                            stroke="currentColor"
+                            fill="none"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            height="1em"
+                            width="1em"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                        </div>
+                        <div
+                          className="p-5 hover:text-red-700 cursor-pointer"
+                          onClick={(event) => confirmDeletion(event, chat.id)}
+                        >
+                          <svg
+                            stroke="currentColor"
+                            fill="none"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            height="1em"
+                            width="1em"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                }
 
-        {showDeletePopup && (
-          <div className="fixed inset-0 z-50 flex justify-center py-25 overflow-auto cursor-pointer md:z-40 bg-black/50 backdrop-blur-sm">
-            <div className="relative w-[90vw] my-auto flex flex-col items-center justify-center space-y-4 h-fit max-w-lg rounded-xl bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 shadow-xl dark:shadow-primary/50 focus:outline-none cursor-auto">
-              <div className="px-4 pb-4 pt-5 sm:p-6 flex items-center justify-between border-b border-black/10 dark:border-white/10 w-full">
-                <div className="flex">
-                  <div className="flex items-center">
-                    <div className="flex flex-col gap-1">
-                      <h2 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
-                        Delete chat ?
-                      </h2>
+                {showDeletePopup && (
+                  <div className="fixed inset-0 z-50 flex justify-center py-25 overflow-auto cursor-pointer md:z-40 bg-black/50 backdrop-blur-sm">
+                    <div className="relative w-[90vw] my-auto flex flex-col items-center justify-center space-y-4 h-fit max-w-lg rounded-xl bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 shadow-xl dark:shadow-primary/50 focus:outline-none cursor-auto">
+                      <div className="px-4 pb-4 pt-5 sm:p-6 flex items-center justify-between border-b border-black/10 dark:border-white/10 w-full">
+                        <div className="flex">
+                          <div className="flex items-center">
+                            <div className="flex flex-col gap-1">
+                              <h2 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
+                                Delete chat ?
+                              </h2>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-4 sm:p-6 items-center justify-center text-center">
+                        This will delete the selected Chat.
+                        <div className="mt-5 sm:mt-4">
+                          <div className="mt-5 flex flex-col gap-3 sm:mt-4 sm:flex-row-reverse">
+                            <div
+                              onClick={deleteChat}
+                              className="flex w-full gap-2 items-center justify-center hover:bg-red-500 py-2 px-6 border border-red-400 rounded-md cursor-pointer"
+                            >
+                              Delete
+                            </div>
+                            <div
+                              onClick={() => setShowDeletePopup(false)}
+                              className="flex w-full gap-2 items-center justify-center hover:bg-gray-500 py-2 px-6 border border-gray-400 rounded-md cursor-pointer"
+                            >
+                              Cancel
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-4 pt-10">
+                <p className="text-center">No Chat history, create one from here.</p>
               </div>
-              <div className="p-4 sm:p-6 items-center justify-center text-center">
-                This will delete the selected Chat.
-                <div className="mt-5 sm:mt-4">
-                  <div className="mt-5 flex flex-col gap-3 sm:mt-4 sm:flex-row-reverse">
-                    <div
-                      onClick={deleteChat}
-                      className="flex w-full gap-2 items-center justify-center hover:bg-red-500 py-2 px-6 border border-red-400 rounded-md cursor-pointer"
-                    >
-                      Delete
-                    </div>
-                    <div
-                      onClick={() => setShowDeletePopup(false)}
-                      className="flex w-full gap-2 items-center justify-center hover:bg-gray-500 py-2 px-6 border border-gray-400 rounded-md cursor-pointer"
-                    >
-                      Cancel
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+            )
+        }
       </div>
 
       <section className="flex flex-col flex-1 items-center w-full max-w-7xl h-full lg:min-h-[70vh] pt-5 2xl:pt-20 2xl:pl-32 px-10 2xl:px-0">
@@ -272,9 +290,9 @@ const Chats = (props: Props) => {
                 <option key={item.id} value={item.name}>
                   {" "}
                   {item.name
-                    .replace(session.data?.user?.email || "", "")
-                    .replaceAll("-", " ")
-                    .trim()}{" "}
+                    ?.replace(session.data?.user?.email || "", "")
+                    ?.replaceAll("-", " ")
+                    ?.trim()}{" "}
                 </option>
               ))}
             </select>
