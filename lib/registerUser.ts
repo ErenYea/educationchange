@@ -1,4 +1,4 @@
-"use server";
+"use server"
 
 import { ZodError, z } from "zod";
 import { hash } from "bcrypt";
@@ -11,17 +11,19 @@ export async function registerUser(prevState: any, formData: FormData) {
   if (!email || !password) {
     return {
       success: false,
-      message: "Please Provide email and password",
+      message: "Please provide an email and password",
     };
   }
+
   try {
     z.string().email().parse(email);
   } catch (e) {
     return {
       success: false,
-      message: "Please Provide valid email",
+      message: "Please provide a valid email",
     };
   }
+
   try {
     z.string().min(8).max(20).parse(password);
   } catch (err: unknown) {
@@ -30,23 +32,34 @@ export async function registerUser(prevState: any, formData: FormData) {
         success: false,
         message: "Password must contain at least 8 characters",
       };
-    } else {
-      console.error("An unexpected error occurred", err);
     }
     return {
       success: false,
-      message: "Please Provide valid password",
+      message: "Please provide a valid password",
     };
   }
-  const hashedPassword = await hash(password, 10);
+
   try {
-    await db.user.create({
-      data: { email: email, hashpassword: hashedPassword },
+    const existingUser = await db.user.findUnique({
+      where: { email },
     });
 
-    return { success: true, message: "Created the new user" };
+    if (existingUser) {
+      return {
+        success: false,
+        message: "An account already exists with this email",
+      };
+    }
+
+    const hashedPassword = await hash(password, 10);
+
+    await db.user.create({
+      data: { email, hashpassword: hashedPassword },
+    });
+
+    return { success: true, message: "New user created" };
   } catch (e) {
-    console.log(e);
-    return { success: false, message: "An account already exists on this email" };
+    console.error(e);
+    return { success: false, message: "Failed to create the user" };
   }
 }
