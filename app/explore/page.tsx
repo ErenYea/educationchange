@@ -18,7 +18,9 @@ const Page = () => {
 
   const getTopics = async () => {
     const response = await getAllTopics(session.data?.user.id || "");
-    setUserTopics(response.data);
+    if (!response.data.error) {
+      setUserTopics(response.data);
+    }
     return response;
   };
 
