@@ -6,7 +6,6 @@ export async function loginUser(prevState: any, formData: FormData) {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
 
-  // await new Promise((r) => setTimeout(r, 10000));
   if (!email || !password) {
     return {
       success: false,
@@ -24,17 +23,12 @@ export async function loginUser(prevState: any, formData: FormData) {
   try {
     z.string().min(8).max(20).parse(password);
   } catch (err: unknown) {
-    // Changed err type to unknown
-    // Now we need to assert the type of err to be ZodError before accessing its properties
     if (err instanceof ZodError) {
-      // Here TypeScript knows err is ZodError
-      // console.log(err.errors[0].message);
       return {
         success: false,
         message: err.errors[0].message,
       };
     } else {
-      // Handle other error types or rethrow
       console.error("An unexpected error occurred", err);
     }
     return {
@@ -48,14 +42,13 @@ export async function loginUser(prevState: any, formData: FormData) {
     password: password,
     redirect: false,
   });
-  console.log({ response });
   if (response?.status == 200) {
     return {
       success: true,
       message: "Successfully logged in",
     };
+  } else if (response?.status == 401) {
+    return { success: false, message: "Invalid credentials" };
   }
-  console.log({ response });
-  // console.log("Get the object", { email, password, name });
   return { success: false, message: "Something went wrong" };
 }

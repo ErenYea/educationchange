@@ -1,7 +1,6 @@
 "use client";
 
 import { registerUser } from "@/lib/registerUser";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
