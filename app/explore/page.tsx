@@ -15,13 +15,15 @@ const Page = () => {
   const [userTopics, setUserTopics] = useState<Topic[]>([]);
   const [showTopicDetails, setShowTopicDetails] = useState(false)
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true)
 
   const getTopics = async () => {
     const response = await getAllTopics(session.data?.user.id || "");
     if (!response.data.error) {
       setUserTopics(response.data);
     }
-    return response;
+    setLoading(false)
+    return
   };
 
   useEffect(() => {
@@ -46,7 +48,12 @@ const Page = () => {
       </div>
       <div className="w-full max-w-3xl flex flex-col gap-5 overflow-y-auto max-h-[80%] px-10">
         <div className="flex flex-col items-center justify-center gap-4">
-          { userTopics.map((topic, ind) => (
+          { loading ? 
+          <div className="flex justify-center items-center overflow-hidden">
+            <div className="animate-spin rounded-full h-14 w-14 border-t-2 border-b-2 border-white"></div>
+          </div>
+          :
+          userTopics.map((topic, ind) => (
             <div key={topic.namespace+ind} className="shadow-md dark:shadow-primary/25 hover:shadow-xl transition-shadow rounded-xl overflow-hidden bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 flex flex-col sm:flex-row sm:items-center justify-between w-full p-5 gap-5">
               <span
               >
