@@ -27,6 +27,7 @@ const Chats = (props: Props) => {
   const [userTopics, setUserTopics] = useState<Topic[]>([]);
   const [isLoading, setIsLoading] = useState(false)
   const [loadingChats, setLoadingChats] = useState(true)
+  const [loadingMessages, setLoadingMessages] = useState(true)
   const session = useSession();
   const pathname = usePathname();
 
@@ -63,7 +64,8 @@ const Chats = (props: Props) => {
   const getMessages = async (chatId: string) => {
     const response = await getAllMessages(chatId);
     setMessages(response.data);
-    return response;
+    setLoadingMessages(false)
+    return;
   };
 
   useEffect(() => {
@@ -110,7 +112,6 @@ const Chats = (props: Props) => {
     chatId: string
   ) => {
     setShowDeletePopup(true);
-    console.log(chatId);
     setChatIdToDelete(chatId);
   };
 
@@ -388,28 +389,35 @@ const Chats = (props: Props) => {
           <div className="flex flex-1 flex-col overflow-hidden">
             <div className="flex flex-col flex-1 overflow-y-auto">
               <div className="flex flex-col gap-3 p-4">
-                {messages.map((message, index) => (
-                  <div
-                    key={index}
-                    className={`flex flex-col items-${
-                      message.type === "user" ? "end" : "start"
-                    }`}
-                  >
+                {loadingMessages ? (
+                  <div className="flex justify-center space-x-4 items-center overflow-hidden">
+                    <div>Loading your messages...</div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+                  </div>
+                ) : (
+                  messages.map((message, index) => (
                     <div
-                      className={`py-3 px-5 w-fit bg-opacity-60 max-w-[60%] text-black items-${
-                        message.type === "user" ? "start" : "end"
-                      } rounded-md flex flex-col overflow-hidden scroll-pb-32 ${
-                        message.type === "user"
-                          ? "dark:bg-white"
-                          : "bg-opacity-60 dark:bg-purple-100"
+                      key={index}
+                      className={`flex flex-col items-${
+                        message.type === "user" ? "end" : "start"
                       }`}
                     >
-                      <div>
-                        <p>{message.text}</p>
+                      <div
+                        className={`py-3 px-5 w-fit bg-opacity-60 max-w-[60%] text-black items-${
+                          message.type === "user" ? "start" : "end"
+                        } rounded-md flex flex-col overflow-hidden scroll-pb-32 ${
+                          message.type === "user"
+                            ? "dark:bg-white"
+                            : "bg-opacity-60 dark:bg-purple-100"
+                        }`}
+                      >
+                        <div>
+                          <p>{message.text}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>
