@@ -409,10 +409,11 @@ const Chats = (props: Props) => {
           <div className="flex items-center w-full justify-center relative">
             <textarea
               className="bg-[#00121f] p-4 border border-black/10 dark:border-white/25 rounded-xl w-full max-h-[8vh] min-h-[8vh] overflow-y-auto focus:outline-none pr-44 pl-6"
-              placeholder="Ask a question, or describe a task."
+              placeholder="Create a New Chat first to use this..."
               rows={2}
               value={userInput}
               onChange={(event) => setUserInput(event.target.value)}
+              disabled
             />
 
             <div className="flex flex-row items-end right-4 absolute 2xl:bottom-6">
