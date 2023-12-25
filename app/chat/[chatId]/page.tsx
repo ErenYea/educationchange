@@ -25,6 +25,7 @@ const Chats = (props: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userChats, setUserChats] = useState<Chat[]>([]);
   const [userTopics, setUserTopics] = useState<Topic[]>([]);
+  const [isLoading, setIsLoading] = useState(false)
   const session = useSession();
   const pathname = usePathname();
 
@@ -39,8 +40,10 @@ const Chats = (props: Props) => {
   const [chatIdToDelete, setChatIdToDelete] = useState<string>("");
 
   const createChat = async () => {
+    setIsLoading(true)
     await createAChat(session.data?.user.id || "");
-    getChats();
+    await getChats();
+    setIsLoading(false)
   };
 
   const getChats = async () => {
@@ -140,6 +143,13 @@ const Chats = (props: Props) => {
           </svg>{" "}
           New Chat
         </div>
+
+        { isLoading && 
+            <div className="flex justify-center space-x-4 items-center overflow-hidden">
+              <div>Creating a new chat</div>
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+            </div>
+        }
 
         {userChats?.map((chat, ind) => (
           <div
