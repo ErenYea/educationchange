@@ -116,10 +116,18 @@ const FileUploader = () => {
                     </div>
                 </div>
                 </div>
-                <div className="flex flex-col items-center justify-center mb-6">
-                    <button type="submit" disabled={uploading} className="px-8 py-3 text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors">
+                <div className="flex w-full items-center justify-between mb-6">
+                    <div className="px-4 pb-1.5 text-2xl font-bold disabled:opacity-80 text-center rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-400 transition-colors cursor-pointer">
+                      {"<"}
+                    </div>
+
+                    <button type="submit" disabled={uploading} className="px-8 py-3 text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors cursor-pointer">
                         { uploading ? 'Uploading...' : 'Upload' } {" "}
                     </button>
+
+                    <div className="px-4 pb-1.5 text-2xl font-bold disabled:opacity-80 text-center rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-400 transition-colors cursor-pointer">
+                      {">"}
+                    </div>
                 </div>
             </section>
 
