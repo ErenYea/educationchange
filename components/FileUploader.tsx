@@ -13,6 +13,7 @@ const FileUploader = () => {
   const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [state.showFileUploader, state.toggleShowFileUploader])
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [uploading, setUploading] = useState<boolean>(false)
+  const [steps, setSteps] = useState<number>(1)
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -55,7 +56,7 @@ const FileUploader = () => {
   return (
     <div className="absolute inset-0 backdrop-blur-sm bg-opacity-75 backdrop-filter flex items-center justify-center">
 
-        <form onSubmit={UploadFiles} className="absolute bg-gray-800 p-4 rounded-2xl 2xl:w-1/3 flex flex-col space-y-6 items-center justify-center">
+        <form onSubmit={UploadFiles} className="absolute bg-gray-800 p-4 rounded-2xl flex flex-col space-y-6 items-center justify-center text-sm">
 
             <div className="text-2xl hover:bg-white/10 rounded-full p-1 cursor-pointer absolute right-4 top-4" onClick={toggleShowFileUploader}>
                 <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0z"></path><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
@@ -65,20 +66,58 @@ const FileUploader = () => {
                 Add New Brain
             </h2>
 
-            <div className="flex flex-col items-center justify-center w-full space-y-8 px-8">
-              <div className="text-xl font-semibold">
-                Quadrant 1. Personal information
-              </div>
-              <div className="flex flex-col items-center justify-center gap-2">
-                <p>Personal Insights</p>
-                <div className="p-4 rounded-md border border-white">
-                  <li>Daily routines and work habits</li>
-                  <li>Recommended reading (books, journals, websites)</li>
-                  <li>Role models or mentors who've influenced his leadership style</li>
-                  <li>Challenges faced and lessons learned</li>
+            {
+              steps === 1 && (
+
+                <div className="flex flex-col items-center justify-center w-full space-y-8 px-8">
+                  <div className="text-xl font-semibold">
+                    Quadrant 1. Personal information
+                  </div>
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p>Personal Insights</p>
+                    <div className="p-4 rounded-md border border-white">
+                      <li>Daily routines and work habits</li>
+                      <li>Recommended reading (books, journals, websites)</li>
+                      <li>Role models or mentors who've influenced his leadership style</li>
+                      <li>Challenges faced and lessons learned</li>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+
+              ) 
+            }
+
+            {
+              steps === 2 && (
+
+                <div className="flex flex-col items-center justify-center w-full space-y-8 px-8">
+                  <div className="text-xl font-semibold">
+                    Quadrant 2. Professional information
+                  </div>
+                  <div className="flex items-center justify-center space-x-4 w-full">
+                    <div className="flex flex-col items-center justify-center gap-2 w-1/2">
+                      <p>Professional Background</p>
+                      <div className="p-4 rounded-md border border-white">
+                        <li>Education (degrees, institutions, areas of study)</li>
+                        <li>Previous roles and work experiences</li>
+                        <li>Professional achievements and milestones</li>
+                        <li>Certifications or continued learning experiences</li>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center justify-center gap-2 w-1/2">
+                      <p>Leadership Style & Philosophy</p>
+                      <div className="p-4 rounded-md border border-white">
+                        <li>Decision-making processes</li>
+                        <li>Views on team collaboration and communication</li>
+                        <li>Core leadership principles and beliefs</li>
+                        <li>Preferred management styles (e.g., hands-on, delegative)</li>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+              ) 
+            }
 
             <section className="flex flex-col items-center justify-center w-full gap-10 px-6 py-3 outline-none">
                 <div className="flex flex-col items-center w-full max-w-3xl gap-5 sm:flex-row">
@@ -117,7 +156,7 @@ const FileUploader = () => {
                 </div>
                 </div>
                 <div className="flex w-full items-center justify-between mb-6">
-                    <div className="px-4 pb-1.5 text-2xl font-bold disabled:opacity-80 text-center rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-400 transition-colors cursor-pointer">
+                    <div onClick={() => setSteps(steps-1)} className="px-4 pb-1.5 text-2xl font-bold disabled:opacity-80 text-center rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-400 transition-colors cursor-pointer">
                       {"<"}
                     </div>
 
@@ -125,7 +164,7 @@ const FileUploader = () => {
                         { uploading ? 'Uploading...' : 'Upload' } {" "}
                     </button>
 
-                    <div className="px-4 pb-1.5 text-2xl font-bold disabled:opacity-80 text-center rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-400 transition-colors cursor-pointer">
+                    <div onClick={() => setSteps(steps+1)} className="px-4 pb-1.5 text-2xl font-bold disabled:opacity-80 text-center rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-400 transition-colors cursor-pointer">
                       {">"}
                     </div>
                 </div>
