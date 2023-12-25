@@ -7,7 +7,6 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to '/upload' when the component mounts
     router.push('/upload');
   }, []);
 
