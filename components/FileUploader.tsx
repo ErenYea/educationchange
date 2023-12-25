@@ -79,8 +79,8 @@ const FileUploader = () => {
                     Quadrant 1. Personal information
                   </div>
                   <div className="flex items-center justify-center space-x-4 w-full">
-                    { QUADRANT_ONE_INFO.map((item) => (
-                        <div className="flex flex-col items-center justify-center gap-2">
+                    { QUADRANT_ONE_INFO.map((item, ind) => (
+                        <div key={ind} className="flex flex-col items-center justify-center gap-2">
                           <p> { item.name } </p>
                           <div className="p-4 rounded-md border border-white">
                             {
@@ -107,8 +107,8 @@ const FileUploader = () => {
                     </div>
 
                     <div className="flex items-center justify-center space-x-4 w-full max-h-[200px]">
-                      { QUADRANT_TWO_INFO.map((item) => (
-                          <div className="flex flex-col items-center justify-center gap-2 w-1/2 h-full">
+                      { QUADRANT_TWO_INFO.map((item, ind) => (
+                          <div key={ind} className="flex flex-col items-center justify-center gap-2 w-1/2 h-full">
                             <p> { item.name } </p>
                             <div className="p-4 rounded-md border border-white h-full">
                               {
@@ -135,8 +135,8 @@ const FileUploader = () => {
                     </div>
 
                     <div className="grid grid-cols-3 items-center justify-center max-w-3xl gap-4 max-h-[200px] overflow-y-auto text-xs px-2">
-                      { QUADRANT_THREE_INFO.map((item) => (
-                          <div className="flex flex-col items-center justify-center gap-2 h-full">
+                      { QUADRANT_THREE_INFO.map((item, ind) => (
+                          <div key={ind} className="flex flex-col items-center justify-center gap-2 h-full">
                             <p className="text-base font-semibold"> { item.name } </p>
                             <div className="p-4 rounded-md border border-white h-full">
                               {
