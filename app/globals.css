@@ -25,3 +25,29 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.notification {
+  position: fixed;
+  top: 60px;
+  right: -400px;
+  animation: slideIn 0.5s forwards, slideOut 0.5s forwards 4.5s;
+  z-index: 9999;
+}
+
+@keyframes slideIn {
+  from {
+    right: -400px;
+  }
+  to {
+    right: 10px;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    right: 10px;
+  }
+  to {
+    right: -400px;
+  }
+}

@@ -2,14 +2,13 @@
 
 import React, { useState } from "react";
 import { useChatStore } from "@/stores/ChatStore";
+import { useNotificationStore } from "@/stores/NotificationStore";
 import Link from "next/link";
 import FileUploader from "@/components/FileUploader";
 import { useSession } from "next-auth/react";
 import { uploadCrawler } from "@/lib/uploadCrawler";
 
-type Props = {};
-
-const Chat = (props: Props) => {
+const Chat = () => {
   const session = useSession();
   
   const [webUrlInput, setWebUrlInput] = useState<string>("");
@@ -18,23 +17,39 @@ const Chat = (props: Props) => {
     state.showFileUploader,
     state.toggleShowFileUploader,
   ]);
+  const [showNotification, toggleShowNotification] = useNotificationStore((state) => [
+    state.showNotification,
+    state.toggleShowNotification,
+  ]);
+
+  const hideNotification = () => {
+    setTimeout(() => {
+      toggleShowNotification();
+    }, 5000);
+  };
+
+  const showAndHideNotification = () => {
+    toggleShowNotification();
+    hideNotification();
+  };
 
   const CrawlWebPage = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!webUrlInput) return;
 
     setCrawling(true);
-    const response = await uploadCrawler(
+    await uploadCrawler(
       session.data?.user?.email || "",
       webUrlInput
     );
-    console.log(response);
+
     setWebUrlInput("");
     setCrawling(false);
+    showAndHideNotification()
   };
 
   return (
-    <div className="flex flex-col items-center pt-20 h-screen">
+    <div className="relative flex flex-col items-center pt-20 h-screen">
       <div className="flex flex-col items-center justify-center">
         <p className="text-3xl font-bold text-center">Upload Knowledge</p>
         <p className="opacity-50 text-center">
@@ -121,6 +136,18 @@ const Chat = (props: Props) => {
           </button>
         </Link>
       </div>
+
+
+      {showNotification && (
+        <div className="notification w-full">
+          <div className="bg-green-500 absolute py-4 px-12 rounded-md cursor-pointer right-4 top-8">
+            <div className="font-bold text-xl tracking-widest">
+              Uploaded Successfully
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

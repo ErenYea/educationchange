@@ -10,6 +10,7 @@ import {
   QUADRANT_TWO_INFO,
   QUADRANT_THREE_INFO,
 } from "@/constants";
+import { useNotificationStore } from "@/stores/NotificationStore";
 
 const FileUploader = () => {
 
@@ -19,6 +20,21 @@ const FileUploader = () => {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [uploading, setUploading] = useState<boolean>(false)
   const [steps, setSteps] = useState<number>(1)
+  const [showNotification, toggleShowNotification] = useNotificationStore((state) => [
+    state.showNotification,
+    state.toggleShowNotification,
+  ]);
+
+  const hideNotification = () => {
+    setTimeout(() => {
+      toggleShowNotification();
+    }, 5000);
+  };
+
+  const showAndHideNotification = () => {
+    toggleShowNotification();
+    hideNotification();
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -42,13 +58,13 @@ const FileUploader = () => {
 
     try {
       const uploadedFiles = await fileUploader(selectedFiles)
-      const response2 = await addFile(
+      await addFile(
         session.data?.user?.email || "",
         uploadedFiles
       );
-      console.log(response2)
       setSelectedFiles(null);
       setUploading(false);
+      showAndHideNotification()
       toggleShowFileUploader()
     } catch (error) {
       console.error('Error uploading files:', error);
