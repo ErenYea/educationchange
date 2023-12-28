@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import { Chat, Message } from "@prisma/client";
 import { usePathname } from "next/navigation";
 import { useChatConfig } from "@/stores/ChatConfig";
+import ChatConfig from "@/components/ChatConfig";
 
 type Topic = {
   namespace: string;
@@ -42,6 +43,7 @@ const Chats = (props: Props) => {
   const [promptUpdate, setPromptUpdate] = useState(false);
   const [thinking, setThinking] = useState(false);
   const [showPromptUpdater, setShowPromptUpdater] = useState(false);
+  const [showConfigUpdater, setShowConfigUpdater] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [chatIdToDelete, setChatIdToDelete] = useState<string>("");
 
@@ -423,7 +425,48 @@ const Chats = (props: Props) => {
                 {thinking ? "Thinking..." : "Chat"}{" "}
               </button>
 
+              <div onClick={() => setShowConfigUpdater(true)} className="text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent py-2 px-2 disabled:opacity-25 focus:outline-none text-2xl cursor-pointer">
+                <svg
+                  stroke="currentColor"
+                  fill="currentColor"
+                  strokeWidth="0"
+                  viewBox="0 0 24 24"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path fill="none" d="M0 0h24v24H0V0z"></path>
+                  <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path>
+                </svg>{" "}
+              </div>
+
+              {showConfigUpdater && (
+              <div className="fixed inset-0 z-50 flex justify-center py-25 overflow-auto cursor-pointer md:z-40 bg-black/50 backdrop-blur-sm">
+                <div className="relative w-[90vw] my-auto flex flex-col items-center justify-center space-y-4 h-fit max-w-2xl">
+                  <div
+                    className="text-2xl hover:bg-white/10 rounded-full p-1 cursor-pointer absolute right-4 top-8"
+                    onClick={() => setShowConfigUpdater(false)}
+                  >
+                    <svg
+                      stroke="currentColor"
+                      fill="currentColor"
+                      strokeWidth="0"
+                      viewBox="0 0 24 24"
+                      height="1em"
+                      width="1em"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path fill="none" d="M0 0h24v24H0z"></path>
+                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+                    </svg>
+                  </div>
+                  <ChatConfig />
+                </div>
+              </div>
+            )}
+
             </div>
+            
           </div>
         </div>
       </section>
