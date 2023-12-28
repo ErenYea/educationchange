@@ -14,7 +14,6 @@ const Chat = (props: Props) => {
   
   const [webUrlInput, setWebUrlInput] = useState<string>("");
   const [crawling, setCrawling] = useState<boolean>(false);
-  const [topic, setTopic] = useState<string>("");
   const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [
     state.showFileUploader,
     state.toggleShowFileUploader,
@@ -26,14 +25,11 @@ const Chat = (props: Props) => {
 
     setCrawling(true);
     const response = await uploadCrawler(
-      session.data?.user.id || "",
-      topic,
       session.data?.user?.email || "",
       webUrlInput
     );
     console.log(response);
     setWebUrlInput("");
-    setTopic("");
     setCrawling(false);
   };
 
@@ -86,15 +82,6 @@ const Chat = (props: Props) => {
               <div className="shadow-md dark:shadow-primary/25 hover:shadow-xl transition-shadow rounded-xl overflow-hidden bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 h-32 flex gap-5 justify-center items-center px-5">
                 <div className="text-center max-w-sm w-full flex flex-col gap-5 items-center">
                   <div className="flex flex-col w-full space-y-4">
-                    <input
-                      className="bg-[#00121f] border border-black/10 dark:border-white/25 rounded-md p-2 w-full focus:outline-none"
-                      placeholder="Please enter a topic"
-                      type="text"
-                      value={topic}
-                      onChange={(event) => setTopic(event.target.value)}
-                      disabled={crawling}
-                      required
-                    />
                     <input
                       className="w-full bg-gray-50 dark:bg-gray-900 px-4 py-2 border rounded-md border-black/10 dark:border-white/25"
                       placeholder="Insert website URL"

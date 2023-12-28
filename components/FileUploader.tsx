@@ -43,7 +43,6 @@ const FileUploader = () => {
     try {
       const uploadedFiles = await fileUploader(selectedFiles)
       const response2 = await addFile(
-        session.data?.user.id || "",
         session.data?.user?.email || "",
         uploadedFiles
       );
