@@ -89,20 +89,6 @@ const Chats = (props: Props) => {
     }
   }, [pathname]);
 
-  const getAnswer = async () => {
-    if (!userInput) return;
-    setThinking(true);
-    await generateMessage(
-      topicName,
-      userInput,
-      chatId,
-      promptUpdate ? prompt : ""
-    );
-    setUserInput("");
-    setThinking(false);
-    getMessages(pathname.replace("/chat/", ""));
-  };
-
   const updatePrompt = () => {
     setPromptUpdate(true);
     setShowPromptUpdater(false);
@@ -403,7 +389,6 @@ const Chats = (props: Props) => {
             <div className="flex flex-row items-end right-4 absolute 2xl:bottom-6">
               <button
                 disabled={thinking}
-                onClick={getAnswer}
                 className="text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-black border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors px-3 py-2 sm:px-4 sm:py-2 cursor-pointer"
               >
                 {thinking ? "Thinking..." : "Chat"}{" "}

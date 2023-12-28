@@ -2,16 +2,16 @@
 
 import db from "./db";
 
-export async function generateMessage(topicName: string, userInput: string, chatId:string, prompt:string) {
+export async function generateMessage(topicName: string, userInput: string, chatId:string, prompt: string, model: string, temperature: number, maxTokens: number) {
     try {
         const requestBody = {
             namespace: topicName,
             query: userInput,
-            model: "gpt-3.5-turbo",
+            model: model,
             openAIKey: process.env.NEXT_PUBLIC_DEFAULT_OPENAI__API_KEY,
             prompt: prompt,
-            temperature: 0.5,
-            maxTokens: 255,
+            temperature: temperature,
+            maxTokens: maxTokens,
         };
         console.log(requestBody)
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/query`, {

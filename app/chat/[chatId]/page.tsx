@@ -13,6 +13,7 @@ import {
 import { useSession } from "next-auth/react";
 import { Chat, Message } from "@prisma/client";
 import { usePathname } from "next/navigation";
+import { useChatConfig } from "@/stores/ChatConfig";
 
 type Topic = {
   namespace: string;
@@ -22,6 +23,9 @@ type Topic = {
 type Props = {};
 
 const Chats = (props: Props) => {
+
+  const { model, temperature, maxTokens } = useChatConfig();
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [userChats, setUserChats] = useState<Chat[]>([]);
   const [userTopics, setUserTopics] = useState<Topic[]>([]);
@@ -36,7 +40,6 @@ const Chats = (props: Props) => {
   const [chatId, setChatId] = useState("");
   const [prompt, setPrompt] = useState("");
   const [promptUpdate, setPromptUpdate] = useState(false);
-  const [topicName, setTopicName] = useState<string>("");
   const [thinking, setThinking] = useState(false);
   const [showPromptUpdater, setShowPromptUpdater] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -70,12 +73,6 @@ const Chats = (props: Props) => {
   };
 
   useEffect(() => {
-    if (userTopics) {
-      setTopicName(userTopics[0]?.namespace);
-    }
-  }, [userTopics]);
-
-  useEffect(() => {
     if (session.data) {
       getChats();
       getTopics();
@@ -96,7 +93,10 @@ const Chats = (props: Props) => {
       session.data?.user.email || "",
       userInput,
       chatId,
-      promptUpdate ? prompt : ""
+      promptUpdate ? prompt : "",
+      model,
+      temperature,
+      maxTokens
     );
     setUserInput("");
     setThinking(false);

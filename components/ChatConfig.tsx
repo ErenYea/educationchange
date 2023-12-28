@@ -1,22 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useChatConfig } from "@/stores/ChatConfig";
 
 const ChatConfig = () => {
-  const [model, setModel] = useState("gpt-3.5-turbo");
-  const [temperature, setTemperature] = useState(0.5);
-  const [maxTokens, setMaxTokens] = useState(256);
+  const { model, temperature, maxTokens } = useChatConfig();
 
   const handleModelChange = (e: any) => {
-    setModel(e.target.value);
+    useChatConfig.setState({ model: e.target.value });
   };
 
-  const handleTemperatureChange = (e: any) => {
-    setTemperature(parseFloat(e.target.value));
+  const handleTemperatureChange = (e: any ) => {
+    useChatConfig.setState({ temperature: parseFloat(e.target.value) });
   };
 
   const handleMaxTokensChange = (e: any) => {
-    setMaxTokens(parseInt(e.target.value));
+    useChatConfig.setState({ maxTokens: parseInt(e.target.value) });
   };
 
   return (
@@ -57,25 +56,6 @@ const ChatConfig = () => {
             onChange={handleMaxTokensChange}
           />
         </fieldset>
-        <button
-          className="px-8 py-3 text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-[#00121f] border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors mt-12 self-end"
-          type="submit"
-        >
-          Save
-          <svg
-            stroke="currentColor"
-            fill="currentColor"
-            stroke-width="0"
-            viewBox="0 0 24 24"
-            className="text-xl"
-            height="1em"
-            width="1em"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path fill="none" d="M0 0h24v24H0z"></path>
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-          </svg>{" "}
-        </button>
       </div>
     </div>
   );
