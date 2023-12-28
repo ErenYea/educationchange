@@ -285,29 +285,8 @@ const Chats = (props: Props) => {
       </div>
 
       <section className="flex flex-col flex-1 items-center w-full max-w-7xl h-full lg:min-h-[70vh] pt-5 2xl:pt-20 2xl:pl-32 px-10 2xl:px-0">
-        <div className="flex items-center justify-center w-full">
-          <div className="w-1/4">
-            <select
-              required
-              className="text-white bg-[#00121f] border p-2 rounded-md w-full"
-              value={topicName}
-              onChange={(event) => setTopicName(event.target.value)}
-            >
-              <option key="" value="" disabled>
-                Select Topic
-              </option>
-              {userTopics.length && userTopics.map((item) => (
-                <option key={item.id} value={item.name}>
-                  {" "}
-                  {item.name
-                    ?.replace(session.data?.user?.email || "", "")
-                    ?.replaceAll("-", " ")
-                    ?.trim()}{" "}
-                </option>
-              ))}
-            </select>
-          </div>
-          <h1 className="text-2xl font-bold text-center w-2/4">
+        <div className="flex items-center gap-4 justify-center w-full">
+          <h1 className="text-2xl font-bold text-center">
             <div>
               <span>
                 Chat with your Digital Twin -{" "}
@@ -319,12 +298,7 @@ const Chats = (props: Props) => {
               and chat with them
             </div>
           </h1>
-          <div className="flex items-center justify-center w-1/4">
-            <button className="text-sm text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 text-black dark:text-white bg-transparent disabled:opacity-25 gap-x-10 group-hover:visible hover:text-red-500 transition-[colors,opacity] p-1">
-              <p className="flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-center text-white transition-colors bg-black border border-black rounded-md outline-none disabled:opacity-80 focus:ring ring-primary/10 dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 sm:px-4 sm:py-2">
-                Share
-              </p>{" "}
-            </button>
+          <div className="flex items-center justify-center">
 
             <button
               onClick={() => setShowPromptUpdater(true)}

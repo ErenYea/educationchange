@@ -93,7 +93,7 @@ const Chats = (props: Props) => {
     if (!userInput) return;
     setThinking(true);
     await generateMessage(
-      topicName,
+      session.data?.user.email || "",
       userInput,
       chatId,
       promptUpdate ? prompt : ""
@@ -293,29 +293,8 @@ const Chats = (props: Props) => {
       </div>
 
       <section className="flex flex-col flex-1 items-center w-full max-w-7xl h-full lg:min-h-[70vh] pt-5 2xl:pt-20 2xl:pl-32 px-10 2xl:px-0">
-        <div className="flex items-center justify-center w-full">
-          <div className="w-1/4">
-            <select
-              required
-              className="text-white bg-[#00121f] border p-2 rounded-md w-full"
-              value={topicName}
-              onChange={(event) => setTopicName(event.target.value)}
-            >
-              <option key="" value="" disabled>
-                Select Topic
-              </option>
-              {userTopics.length && userTopics.map((item) => (
-                <option key={item.namespace} value={item.namespace}>
-                  {" "}
-                  {item.namespace
-                    ?.replace(session.data?.user?.email || "", "")
-                    .replaceAll("-", " ")
-                    .trim()}{" "}
-                </option>
-              ))}
-            </select>
-          </div>
-          <h1 className="text-2xl font-bold text-center w-2/4">
+        <div className="flex items-center gap-6 justify-center w-full">
+          <h1 className="text-2xl font-bold text-center">
             <div>
               <span>
                 Chat with your Digital Twin -{" "}
@@ -327,12 +306,7 @@ const Chats = (props: Props) => {
               and chat with them
             </div>
           </h1>
-          <div className="flex items-center justify-center w-1/4">
-            <button className="text-sm text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 text-black dark:text-white bg-transparent disabled:opacity-25 gap-x-10 group-hover:visible hover:text-red-500 transition-[colors,opacity] p-1">
-              <p className="flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-center text-white transition-colors bg-black border border-black rounded-md outline-none disabled:opacity-80 focus:ring ring-primary/10 dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200 sm:px-4 sm:py-2">
-                Share
-              </p>{" "}
-            </button>
+          <div className="flex items-center justify-center">
 
             <button
               onClick={() => setShowPromptUpdater(true)}
@@ -449,36 +423,6 @@ const Chats = (props: Props) => {
                 {thinking ? "Thinking..." : "Chat"}{" "}
               </button>
 
-              <div className="text-sm text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent disabled:opacity-25 p-2 sm:px-3 cursor-pointer">
-                <svg
-                  stroke="currentColor"
-                  fill="currentColor"
-                  strokeWidth="0"
-                  viewBox="0 0 24 24"
-                  className="text-lg sm:text-xl lg:text-2xl"
-                  height="1em"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path fill="none" d="M0 0h24v24H0z"></path>
-                  <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"></path>
-                </svg>{" "}
-              </div>
-
-              <div className="text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent py-2 px-2 disabled:opacity-25 focus:outline-none text-2xl cursor-pointer">
-                <svg
-                  stroke="currentColor"
-                  fill="currentColor"
-                  strokeWidth="0"
-                  viewBox="0 0 24 24"
-                  height="1em"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path fill="none" d="M0 0h24v24H0V0z"></path>
-                  <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path>
-                </svg>{" "}
-              </div>
             </div>
           </div>
         </div>
