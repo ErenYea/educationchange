@@ -6,13 +6,15 @@ import { useNotificationStore } from "@/stores/NotificationStore";
 import Link from "next/link";
 import FileUploader from "@/components/FileUploader";
 import { useSession } from "next-auth/react";
-import { uploadCrawler } from "@/lib/uploadCrawler";
+import { uploadCrawler, extractVideo } from "@/lib/uploadCrawler";
 
 const Chat = () => {
   const session = useSession();
   
   const [webUrlInput, setWebUrlInput] = useState<string>("");
   const [crawling, setCrawling] = useState<boolean>(false);
+  const [youtubeUrlInput, setYoutubeUrlInput] = useState<string>("");
+  const [fetching, setFetching] = useState<boolean>(false);
   const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [
     state.showFileUploader,
     state.toggleShowFileUploader,
@@ -45,6 +47,21 @@ const Chat = () => {
 
     setWebUrlInput("");
     setCrawling(false);
+    showAndHideNotification()
+  };
+
+  const fetchVideo = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!youtubeUrlInput) return;
+
+    setFetching(true);
+    await extractVideo(
+      session.data?.user?.email || "",
+      youtubeUrlInput
+    );
+
+    setYoutubeUrlInput("");
+    setFetching(false);
     showAndHideNotification()
   };
 
@@ -120,6 +137,54 @@ const Chat = () => {
                       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
                     </div>
                      : "Crawl"}{" "}
+                  </button>
+
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-center m-5">
+        <hr className="border-t border-gray-300 w-12" />
+        <p className="px-3 text-center text-gray-500 dark:text-white">or</p>
+        <hr className="border-t border-gray-300 w-12" />
+      </div>
+
+      <div className="w-full">
+        <div className="flex justify-center gap-5 px-6">
+          <div className="max-w-xl w-full">
+            <form
+              onSubmit={fetchVideo}
+              className="flex-col justify-center gap-5"
+            >
+              <div className="shadow-md dark:shadow-primary/25 hover:shadow-xl transition-shadow rounded-xl overflow-hidden bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 h-32 flex gap-5 justify-center items-center px-5">
+                <div className="text-center max-w-sm w-full flex flex-col gap-5 items-center">
+                  <div className="flex flex-col w-full space-y-4">
+                    <input
+                      className="w-full bg-gray-50 dark:bg-gray-900 px-4 py-2 border rounded-md border-black/10 dark:border-white/25"
+                      placeholder="Insert youtube video URL"
+                      type="text"
+                      value={youtubeUrlInput}
+                      disabled={fetching}
+                      required
+                      onChange={(event) => setYoutubeUrlInput(event.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    type="submit"
+                    disabled={fetching}
+                    className="px-8 py-3 text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-[#00121f] border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-200"
+                  >
+                    {fetching ? 
+                    <div className="flex items-center justify-center space-x-2">
+                      <p>Fetching...</p>
+                      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+                    </div>
+                     : "Fetch"}{" "}
                   </button>
 
                 </div>

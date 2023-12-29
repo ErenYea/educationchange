@@ -43,7 +43,7 @@ const Header = (props: Props) => {
         </div>
 
         <div className="flex sm:flex-1 sm:justify-end flex-col items-center justify-center sm:flex-row gap-5 sm:gap-2">
-          <div className="relative px-4 py-2 ml-auto cursor-pointer">
+          {/* <div className="relative px-4 py-2 ml-auto cursor-pointer">
 
             <Image src="/brain.svg" alt="" layout="fill" onClick={() => setShowBrainPopup(!showBrainPopup)} />
 
@@ -145,7 +145,7 @@ const Header = (props: Props) => {
               </div>
             }
 
-          </div>
+          </div> */}
 
           <Link href={"/settings"}>
             <div className="text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent py-2 px-4 disabled:opacity-25 focus:outline-none text-2xl">
