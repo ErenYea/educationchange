@@ -27,10 +27,9 @@ export async function uploadCrawler(
     );
 
     const data = await response.json();
-    return { success: true, message: "successful", data: data };
+    return { success: true, message: "Uploaded Successfully", data: data };
   } catch (e) {
-    console.log(e);
-    return { success: false, message: "error" };
+    return { success: false, message: "Something went wrong" };
   }
 }
 
@@ -61,9 +60,8 @@ export async function extractVideo(
     );
 
     const data = await response.json();
-    return { success: true, message: "successful", data: data };
+    return { success: true, message: "Uploaded Successfully", data: data };
   } catch (e) {
-    console.log(e);
-    return { success: false, message: "error" };
+    return { success: false, message: "Something went wrong" };
   }
 }

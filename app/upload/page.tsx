@@ -8,6 +8,11 @@ import FileUploader from "@/components/FileUploader";
 import { useSession } from "next-auth/react";
 import { uploadCrawler, extractVideo } from "@/lib/uploadCrawler";
 
+interface AlertMessage {
+  color: string;
+  message: string;
+}
+
 const Chat = () => {
   const session = useSession();
   
@@ -15,6 +20,10 @@ const Chat = () => {
   const [crawling, setCrawling] = useState<boolean>(false);
   const [youtubeUrlInput, setYoutubeUrlInput] = useState<string>("");
   const [fetching, setFetching] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<AlertMessage>({
+    color: '',
+    message: ''
+  });  
   const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [
     state.showFileUploader,
     state.toggleShowFileUploader,
@@ -40,10 +49,15 @@ const Chat = () => {
     if (!webUrlInput) return;
 
     setCrawling(true);
-    await uploadCrawler(
+    const response = await uploadCrawler(
       session.data?.user?.email || "",
       webUrlInput
     );
+
+    setAlertMessage({
+      color : response.success ? 'bg-green-500' : 'bg-red-500',
+      message: response.message
+    })
 
     setWebUrlInput("");
     setCrawling(false);
@@ -55,10 +69,15 @@ const Chat = () => {
     if (!youtubeUrlInput) return;
 
     setFetching(true);
-    await extractVideo(
+    const response = await extractVideo(
       session.data?.user?.email || "",
       youtubeUrlInput
     );
+
+    setAlertMessage({
+      color : response.success ? 'bg-green-500' : 'bg-red-500',
+      message: response.message
+    })
 
     setYoutubeUrlInput("");
     setFetching(false);
@@ -205,9 +224,9 @@ const Chat = () => {
 
       {showNotification && (
         <div className="notification w-full">
-          <div className="bg-green-500 absolute py-4 px-12 rounded-md cursor-pointer right-4 top-8">
+          <div className={`${alertMessage.color} absolute py-4 px-12 rounded-md cursor-pointer right-4 top-8`}>
             <div className="font-bold text-xl tracking-widest">
-              Uploaded Successfully
+              {alertMessage.message}
             </div>
           </div>
         </div>
