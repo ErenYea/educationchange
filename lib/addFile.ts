@@ -29,8 +29,8 @@ export async function addFile(email: string, uploadedFiles: Array<string>) {
     });
 
     const results = await Promise.all(filePromises);
-    return results;
-  } catch (error) {
-    return { success: false, message: error };
+    return { success: true, message: "Uploaded Successfully", data: results };
+  } catch (e) {
+    return { success: false, message: "Something went wrong" };
   }
 }

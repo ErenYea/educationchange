@@ -16,14 +16,11 @@ const FileUploader = () => {
 
   const session = useSession();
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [state.showFileUploader, state.toggleShowFileUploader])
+  const [toggleShowFileUploader] = useChatStore((state) => [state.toggleShowFileUploader])
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [uploading, setUploading] = useState<boolean>(false)
   const [steps, setSteps] = useState<number>(1)
-  const [showNotification, toggleShowNotification] = useNotificationStore((state) => [
-    state.showNotification,
-    state.toggleShowNotification,
-  ]);
+  const { showNotification, toggleShowNotification, color, message, setColor, setMessage } = useNotificationStore();
 
   const hideNotification = () => {
     setTimeout(() => {
@@ -58,19 +55,24 @@ const FileUploader = () => {
 
     try {
       const uploadedFiles = await fileUploader(selectedFiles)
-      await addFile(
+      const response = await addFile(
         session.data?.user?.email || "",
         uploadedFiles
       );
+  
+      setColor(response.success ? 'bg-green-500' : 'bg-red-500')
+      setMessage(response.message)
+  
       setSelectedFiles(null);
       setUploading(false);
       showAndHideNotification()
       toggleShowFileUploader()
-    } catch (error) {
-      console.error('Error uploading files:', error);
-      setUploading(false);
+
+    } catch {
+      setColor('bg-red-500')
+      setMessage("Something went wrong")
     }
-    
+
   };
   
   return (

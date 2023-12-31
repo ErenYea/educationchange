@@ -8,11 +8,6 @@ import FileUploader from "@/components/FileUploader";
 import { useSession } from "next-auth/react";
 import { uploadCrawler, extractVideo } from "@/lib/uploadCrawler";
 
-interface AlertMessage {
-  color: string;
-  message: string;
-}
-
 const Chat = () => {
   const session = useSession();
   
@@ -20,18 +15,9 @@ const Chat = () => {
   const [crawling, setCrawling] = useState<boolean>(false);
   const [youtubeUrlInput, setYoutubeUrlInput] = useState<string>("");
   const [fetching, setFetching] = useState<boolean>(false);
-  const [alertMessage, setAlertMessage] = useState<AlertMessage>({
-    color: '',
-    message: ''
-  });  
-  const [showFileUploader, toggleShowFileUploader] = useChatStore((state) => [
-    state.showFileUploader,
-    state.toggleShowFileUploader,
-  ]);
-  const [showNotification, toggleShowNotification] = useNotificationStore((state) => [
-    state.showNotification,
-    state.toggleShowNotification,
-  ]);
+  const { showFileUploader, toggleShowFileUploader } = useChatStore();
+
+  const { showNotification, toggleShowNotification, color, message, setColor, setMessage } = useNotificationStore();
 
   const hideNotification = () => {
     setTimeout(() => {
@@ -53,11 +39,9 @@ const Chat = () => {
       session.data?.user?.email || "",
       webUrlInput
     );
-
-    setAlertMessage({
-      color : response.success ? 'bg-green-500' : 'bg-red-500',
-      message: response.message
-    })
+    
+    setColor(response.success ? 'bg-green-500' : 'bg-red-500')
+    setMessage(response.message)
 
     setWebUrlInput("");
     setCrawling(false);
@@ -74,10 +58,8 @@ const Chat = () => {
       youtubeUrlInput
     );
 
-    setAlertMessage({
-      color : response.success ? 'bg-green-500' : 'bg-red-500',
-      message: response.message
-    })
+    setColor(response.success ? 'bg-green-500' : 'bg-red-500')
+    setMessage(response.message)
 
     setYoutubeUrlInput("");
     setFetching(false);
@@ -85,7 +67,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="relative flex flex-col items-center pt-20 h-screen">
+    <div className="relative flex flex-col items-center pt-4 2xl:pt-20 h-screen">
       <div className="flex flex-col items-center justify-center">
         <p className="text-3xl font-bold text-center">Upload Knowledge</p>
         <p className="opacity-50 text-center">
@@ -224,9 +206,9 @@ const Chat = () => {
 
       {showNotification && (
         <div className="notification w-full">
-          <div className={`${alertMessage.color} absolute py-4 px-12 rounded-md cursor-pointer right-4 top-8`}>
+          <div className={`${color} absolute py-4 px-12 rounded-md cursor-pointer right-4 top-8`}>
             <div className="font-bold text-xl tracking-widest">
-              {alertMessage.message}
+              {message}
             </div>
           </div>
         </div>
