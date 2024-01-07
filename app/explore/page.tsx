@@ -1,35 +1,39 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getAllTopics } from "@/lib/chat";
+import { getUploadedData } from "@/lib/chat";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-
-type Topic = {
-  namespace: string;
-  content: string;
-};
+import { useBrainStore } from "@/stores/Brain";
 
 const Page = () => {
   
   const session = useSession();
-  const [userTopics, setUserTopics] = useState<Topic[]>([]);
+  const [content, setContent] = useState(null);
   const [showTopicDetails, setShowTopicDetails] = useState(false)
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [loading, setLoading] = useState(true)
+  const { brainName } = useBrainStore();
 
-  const getTopics = async () => {
-    const response = await getAllTopics(session.data?.user.id || "");
-    if (!response.data.error) {
-      setUserTopics(response.data);
+  const getContent = async () => {
+    const response = await getUploadedData(session.data?.user.email || "", brainName);
+    console.log(response)
+    if (response.success) {
+      if (!response.data.error) {
+        setContent(response.data);
+      }
     }
     setLoading(false)
     return
   };
 
   useEffect(() => {
+    console.log(content)
+  }, [content])
+
+  useEffect(() => {
     if (session.data) {
-      getTopics();
+      getContent();
     }
   }, [session]);
 
@@ -55,16 +59,16 @@ const Page = () => {
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
             </div>
             :
-            userTopics.length > 0 ? (
-              userTopics.map((topic, ind) => (
-                <div key={topic.namespace+ind} className="shadow-md dark:shadow-primary/25 hover:shadow-xl transition-shadow rounded-xl overflow-hidden bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 flex flex-col sm:flex-row sm:items-center justify-between w-full p-5 gap-5">
+            content ? (
+              Object.entries(content).map(([name, value]) => (
+                <div key={name} className="shadow-md dark:shadow-primary/25 hover:shadow-xl transition-shadow rounded-xl overflow-hidden bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 flex flex-col sm:flex-row sm:items-center justify-between w-full p-5 gap-5">
                   <span
                   >
-                    { topic.namespace.replace(session.data?.user?.email || "", "").replaceAll("-", " ").trim()}
+                    { name }
                   </span>
                   <div className="flex gap-2">
                     <div
-                      onClick={() => showDetails(topic.namespace)}
+                      onClick={() => showDetails(name)}
                       className="px-8 py-3 text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 bg-[#00121f] border border-black dark:border-white disabled:bg-gray-500 disabled:hover:bg-gray-500 text-white dark:bg-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-400 transition-colors cursor-pointer"
                     >
                       View{" "}
@@ -75,7 +79,7 @@ const Page = () => {
                       Delete{" "}
                     </div>
                   </div>
-                  { selectedTopic === topic.namespace && (
+                  { selectedTopic === name && (
                     <div className="fixed inset-0 z-50 flex justify-center py-25 overflow-auto cursor-pointer md:z-40 bg-black/10 backdrop-blur-sm">
                       <div className="relative w-1/2 h-1/2 my-auto flex flex-col items-center justify-center space-y-4 max-w-2xl rounded-xl bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 px-6 pb-6 pt-12 shadow-xl dark:shadow-primary/50 focus:outline-none cursor-auto">
                         <div
@@ -97,11 +101,11 @@ const Page = () => {
                         </div>
                         <div className="flex flex-col gap-1">
                           <h2 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200 border-b-2">
-                            { topic.namespace.replace(session.data?.user?.email || "", "").replaceAll("-", " ").trim()}
+                            { name }
                           </h2>
                         </div>
                         <div className="w-full h-full overflow-y-auto text-justify px-4">
-                          { topic.content }
+                          { value }
                         </div>
                       </div>
                     </div>

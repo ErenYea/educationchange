@@ -141,3 +141,25 @@ export async function getTopicDetails(topics: String[]) {
         return { success: false, message: "error" };
     }
 }
+
+export async function getUploadedData(email: string, brainName: string) {
+    try {
+        const requestBody = {
+            namespace: email + brainName
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/fetch`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        })
+
+        const data = await response.json()
+        return { success: true, data: data };
+
+    } catch (e) {
+        return { success: false, message: "error" };
+    }
+}
