@@ -84,6 +84,26 @@ export async function getAllChats(userId: string) {
     return { success: true, message: "successful", data: chats };
 }
 
+export async function createABrain(userId: string, brainName: string) {
+    try {
+        await db.topic.create({
+          data: { userId: userId, name: brainName },
+        });
+
+        return { success: true, message: "Brain created successfully" };
+    } catch (error) {
+        return { success: false, message: "error" };
+    }
+}
+
+export async function getAllBrains(userId: string) {
+    const topicsResponse = await db.topic.findMany({
+        where: { userId: userId },
+    });
+    return { success: true, message: "successful", data: topicsResponse };
+}
+
+
 export async function getAllTopics(userId: string) {
     const topicsResponse = await db.topic.findMany({
         where: { userId: userId },

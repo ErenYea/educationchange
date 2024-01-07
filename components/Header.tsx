@@ -2,12 +2,61 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { createABrain, getAllBrains } from "@/lib/chat";
+import { useSession } from "next-auth/react";
+import { useNotificationStore } from "@/stores/NotificationStore";
 
 type Props = {};
 
+type Brain = {
+  id: string,
+  name: string,
+  userId: string
+}
+
 const Header = (props: Props) => {
+
+  const session = useSession();
   const [showBrainPopup, setShowBrainPopup] = useState<Boolean>(false);
+  const [showNewBrainCreator, setShowNewBrainCreator] = useState<Boolean>(false);
+  const [newBrainName, setNewBrainName] = useState("")
+  const [userBrains, setUserBrains] = useState<Brain[]>([]);
+
+  const { toggleShowNotification, color, message, setColor, setMessage } = useNotificationStore();
+
+  const hideNotification = () => {
+    setTimeout(() => {
+      toggleShowNotification();
+    }, 5000);
+  };
+
+  const showAndHideNotification = () => {
+    toggleShowNotification();
+    hideNotification();
+  };
+
+  const getBrains = async () => {
+    const response = await getAllBrains(session.data?.user.id || "");
+    setUserBrains(response.data)
+    return
+  };
+
+  useEffect(() => {
+    if (session.data) {
+      getBrains();
+    }
+  }, [session]);
+
+  const createNewBrain = async () => {
+    const response = await createABrain(session.data?.user.id || "", newBrainName);
+
+    setColor(response.success ? 'bg-green-500' : 'bg-red-500')
+    setMessage(response.message)
+    setShowNewBrainCreator(false)
+    setNewBrainName("")
+    showAndHideNotification()
+  }
 
   return (
     <div className="h-[60px] w-full flex justify-evenly border-b border-b-white/20 top-0 sticky z-50">
@@ -58,26 +107,31 @@ const Header = (props: Props) => {
                       />
                     </div>
                     <div className="flex flex-col h-48 mt-5 overflow-auto scrollbar">
-                      <div className="relative flex items-center group">
-                        <button className="flex flex-1 items-center gap-2 w-full text-left px-4 py-2 text-sm leading-5 text-gray-900 dark:text-gray-300 group-hover:bg-gray-100 dark:group-hover:bg-gray-700 group-focus:bg-gray-100 dark:group-focus:bg-gray-700 group-focus:outline-none transition-colors">
-                          <span>
-                            <svg
-                              stroke="currentColor"
-                              fill="currentColor"
-                              strokeWidth="0"
-                              viewBox="0 0 24 24"
-                              className="text-xl transition-opacity"
-                              width="1em"
-                              height="1em"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path fill="none" d="M0 0h24v24H0z"></path>
-                              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                            </svg>
-                          </span>
-                          <span className="flex-1">Default brain</span>
-                        </button>
-                        <div className="absolute right-0 flex flex-row">
+                      <div className="relative flex flex-col items-center group">
+                        {
+                          userBrains.map((brain) => (
+                            <button key={brain.id} className="flex flex-1 items-center gap-2 w-full text-left px-4 py-2 text-sm leading-5 text-gray-900 dark:text-gray-300 hover:bg-gray-100/20">
+                              <span className="">
+                                <svg
+                                  stroke="currentColor"
+                                  fill="currentColor"
+                                  strokeWidth="0"
+                                  viewBox="0 0 24 24"
+                                  className="text-xl transition-opacity"
+                                  width="1em"
+                                  height="1em"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path fill="none" d="M0 0h24v24H0z"></path>
+                                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                                </svg>
+                              </span>
+                              <span className="flex-1">{brain.name}</span>
+                            </button>
+
+                          )) 
+                        }
+                        {/* <div className="absolute right-0 flex flex-row">
                           <button className="text-sm text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 text-black dark:text-white bg-transparent disabled:opacity-25 group-hover:visible invisible hover:text-red-500 transition-[colors,opacity] p-1">
                             <svg
                               stroke="currentColor"
@@ -108,7 +162,7 @@ const Header = (props: Props) => {
                               <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
                             </svg>{" "}
                           </button>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
@@ -117,6 +171,7 @@ const Header = (props: Props) => {
                 <div className="mt-4 self-end flex gap-4">
                   <div
                     className="text-sm disabled:opacity-80 text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 border border-black dark:border-white bg-white dark:bg-transparent text-black dark:text-white focus:bg-black dark:focus:bg-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black focus:text-white dark:focus:text-black transition-colors py-2 px-4 shadow-none"
+                    onClick={() => setShowNewBrainCreator(true)}
                   >
                     Add New Brain
                     <svg
@@ -144,6 +199,47 @@ const Header = (props: Props) => {
 
               </div>
             }
+
+            {showNewBrainCreator && (
+              <div className="fixed inset-0 z-50 flex justify-center py-25 overflow-auto cursor-pointer md:z-40 bg-black/50 backdrop-blur-sm">
+                <div className="relative w-[90vw] my-auto flex flex-col items-center justify-center space-y-4 h-fit max-w-2xl rounded-xl bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 p-10 shadow-xl dark:shadow-primary/50 focus:outline-none cursor-auto">
+                  <div
+                    className="text-2xl hover:bg-white/10 rounded-full p-1 cursor-pointer absolute right-4 top-4"
+                    onClick={() => setShowNewBrainCreator(false)}
+                  >
+                    <svg
+                      stroke="currentColor"
+                      fill="currentColor"
+                      strokeWidth="0"
+                      viewBox="0 0 24 24"
+                      height="1em"
+                      width="1em"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path fill="none" d="M0 0h24v24H0z"></path>
+                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+                    </svg>
+                  </div>
+                  <h2 className="m-0 text-2xl font-bold border-b border-grey">
+                    Add New Brain
+                  </h2>
+                  <p className="">Brain Name</p>
+                  <input
+                    className="w-full px-4 py-2 border rounded-md bg-gray-50 dark:bg-gray-900 border-black/10 dark:border-white/25 p-auto"
+                    value={newBrainName}
+                    onChange={(event) => setNewBrainName(event.target.value)}
+                  />
+                  <div className="flex justify-between gap-3">
+                    <button
+                      onClick={createNewBrain}
+                      className="disabled:opacity-80 text-center font-medium focus:ring ring-primary/10 outline-none gap-2 dark:border-white text-black dark:text-white focus:bg-black dark:focus:bg-white dark:hover:bg-white dark:hover:text-black focus:text-white dark:focus:text-black transition-colors z-20 flex items-center grow justify-center px-4 py-2 text-xl bg-white border rounded-lg shadow-lg align-center border-primary dark:bg-black hover:text-white hover:bg-black top-1"
+                    >
+                      <p>Create +</p>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
           </div>
 
@@ -179,24 +275,6 @@ const Header = (props: Props) => {
               <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
             </svg>
           </Link>
-
-          {/* <button
-            className="text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent py-2 px-4 disabled:opacity-25 focus:outline-none text-3xl"
-            aria-label="toggle dark mode"
-          >
-            <svg
-              stroke="currentColor"
-              fill="currentColor"
-              strokeWidth="0"
-              viewBox="0 0 24 24"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path fill="none" d="M0 0h24v24H0z"></path>
-              <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"></path>
-            </svg>{" "}
-          </button> */}
         </div>
       </div>
     </div>
