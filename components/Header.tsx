@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { createABrain, getAllBrains } from "@/lib/chat";
 import { useSession } from "next-auth/react";
 import { useNotificationStore } from "@/stores/NotificationStore";
+import { useBrainStore } from "@/stores/Brain";
 
 type Props = {};
 
@@ -22,6 +23,7 @@ const Header = (props: Props) => {
   const [showNewBrainCreator, setShowNewBrainCreator] = useState<Boolean>(false);
   const [newBrainName, setNewBrainName] = useState("")
   const [userBrains, setUserBrains] = useState<Brain[]>([]);
+  const { brainName, setBrainName } = useBrainStore();
 
   const { toggleShowNotification, color, message, setColor, setMessage } = useNotificationStore();
 
@@ -110,22 +112,28 @@ const Header = (props: Props) => {
                       <div className="relative flex flex-col items-center group">
                         {
                           userBrains.map((brain) => (
-                            <button key={brain.id} className="flex flex-1 items-center gap-2 w-full text-left px-4 py-2 text-sm leading-5 text-gray-900 dark:text-gray-300 hover:bg-gray-100/20">
-                              <span className="">
-                                <svg
-                                  stroke="currentColor"
-                                  fill="currentColor"
-                                  strokeWidth="0"
-                                  viewBox="0 0 24 24"
-                                  className="text-xl transition-opacity"
-                                  width="1em"
-                                  height="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path fill="none" d="M0 0h24v24H0z"></path>
-                                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                </svg>
-                              </span>
+                            <button key={brain.id} onClick={() => setBrainName(brain.name)} className="flex flex-1 items-center gap-2 w-full text-left p-2 text-sm leading-5 text-gray-900 dark:text-gray-300 hover:bg-gray-100/20">
+                              <div className="w-6">
+                                {
+                                  brain.name === brainName && (
+                                    <span className="">
+                                      <svg
+                                        stroke="currentColor"
+                                        fill="currentColor"
+                                        strokeWidth="0"
+                                        viewBox="0 0 24 24"
+                                        className="text-xl transition-opacity"
+                                        width="1em"
+                                        height="1em"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path fill="none" d="M0 0h24v24H0z"></path>
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                                      </svg>
+                                    </span>
+                                  )
+                                }
+                              </div>
                               <span className="flex-1">{brain.name}</span>
                             </button>
 
