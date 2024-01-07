@@ -62,7 +62,7 @@ const Page = () => {
             content ? (
               Object.entries(content).map(([name, value]) => (
                 <div key={name} className="shadow-md dark:shadow-primary/25 hover:shadow-xl transition-shadow rounded-xl overflow-hidden bg-white dark:bg-[#00121f] border border-black/10 dark:border-white/25 flex flex-col sm:flex-row sm:items-center justify-between w-full p-5 gap-5">
-                  <span
+                  <span className="truncate"
                   >
                     { name }
                   </span>
