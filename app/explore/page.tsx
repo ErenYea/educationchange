@@ -20,6 +20,8 @@ const Page = () => {
     if (response.success) {
       if (!response.data.error) {
         setContent(response.data);
+      } else {
+        setContent(null)
       }
     }
     setLoading(false)
@@ -27,10 +29,14 @@ const Page = () => {
   };
 
   useEffect(() => {
-    if (session.data) {
+    setLoading(true)
+    const timeout = setTimeout(() => {
       getContent();
-    }
-  }, [session]);
+    }, 2000);
+    
+    return () => clearTimeout(timeout);
+  }, [brainName]);
+  
 
   const showDetails = (topicName: string) => {
     setSelectedTopic(topicName === selectedTopic ? null : topicName);
