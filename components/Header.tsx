@@ -10,8 +10,8 @@ const Header = (props: Props) => {
   const [showBrainPopup, setShowBrainPopup] = useState<Boolean>(false);
 
   return (
-    <div className="h-[60px] w-full flex justify-evenly border-b border-b-white/20 top-0 sticky">
-      <div className="max-w-7xl flex flex-1 items-center justify-center">
+    <div className="h-[60px] w-full flex justify-evenly border-b border-b-white/20 top-0 sticky z-50">
+      <div className="w-full 2xl:max-w-7xl max-w-6xl flex items-center justify-center">
         <div className="w-full flex space-x-8 items-center">
           <Link
             href={"/"}
@@ -43,12 +43,12 @@ const Header = (props: Props) => {
         </div>
 
         <div className="flex sm:flex-1 sm:justify-end flex-col items-center justify-center sm:flex-row gap-5 sm:gap-2">
-          {/* <div className="relative px-4 py-2 ml-auto cursor-pointer">
+          <div className="relative px-4 py-2 ml-auto cursor-pointer">
 
             <Image src="/brain.svg" alt="" layout="fill" onClick={() => setShowBrainPopup(!showBrainPopup)} />
 
             { showBrainPopup &&
-              <div className="absolute flex flex-col p-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg z-50 md:z-40 w-[300px] -left-[400%] top-[100%] mt-4">
+              <div className="absolute flex flex-col p-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg w-[300px] -left-[400%] top-[100%] mt-4">
                 <div className="flex-1">
                   <div>
                     <div className="flex flex-col w-full">
@@ -145,7 +145,7 @@ const Header = (props: Props) => {
               </div>
             }
 
-          </div> */}
+          </div>
 
           <Link href={"/settings"}>
             <div className="text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 transition-opacity text-black dark:text-white bg-transparent py-2 px-4 disabled:opacity-25 focus:outline-none text-2xl">
