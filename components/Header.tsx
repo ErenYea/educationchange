@@ -60,6 +60,11 @@ const Header = (props: Props) => {
     showAndHideNotification()
   }
 
+  const updateBrain = (brainName: string) => {
+    setBrainName(brainName)
+    setShowBrainPopup(!showBrainPopup)
+  }
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredBrains = userBrains.filter(
@@ -121,7 +126,7 @@ const Header = (props: Props) => {
                       <div className="relative flex flex-col items-center group">
                         {
                           filteredBrains.map((brain) => (
-                            <button key={brain.id} onClick={() => setBrainName(brain.name)} className="flex flex-1 items-center gap-2 w-full text-left p-2 text-sm leading-5 text-gray-900 dark:text-gray-300 hover:bg-gray-100/20">
+                            <button key={brain.id} onClick={() => updateBrain(brain.name)} className="flex flex-1 items-center gap-2 w-full text-left p-2 text-sm leading-5 text-gray-900 dark:text-gray-300 hover:bg-gray-100/20">
                               <div className="w-6">
                                 {
                                   brain.name === brainName && (
