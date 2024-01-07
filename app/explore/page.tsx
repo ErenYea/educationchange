@@ -9,7 +9,7 @@ import { useBrainStore } from "@/stores/Brain";
 const Page = () => {
   
   const session = useSession();
-  const [content, setContent] = useState(null);
+  const [content, setContent] = useState<{ [key: string]: string } | null>(null);
   const [showTopicDetails, setShowTopicDetails] = useState(false)
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [loading, setLoading] = useState(true)
