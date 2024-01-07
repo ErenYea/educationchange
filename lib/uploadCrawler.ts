@@ -2,11 +2,12 @@
 
 export async function uploadCrawler(
   email: string,
+  brainName: string,
   webUrlInput: string
 ) {
   try {
     const requestBody = {
-      namespace: email,
+      namespace: email + brainName,
       metadata: {
         type: "webpage",
         link: webUrlInput,
@@ -35,11 +36,12 @@ export async function uploadCrawler(
 
 export async function extractVideo(
   email: string,
+  brainName: string,
   youtubeUrlInput: string
 ) {
   try {
     const requestBody = {
-      namespace: email,
+      namespace: email + brainName,
       metadata: {
         type: "youtubeURL",
         link: youtubeUrlInput,

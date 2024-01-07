@@ -7,6 +7,7 @@ import Link from "next/link";
 import FileUploader from "@/components/FileUploader";
 import { useSession } from "next-auth/react";
 import { uploadCrawler, extractVideo } from "@/lib/uploadCrawler";
+import { useBrainStore } from "@/stores/Brain";
 
 const Chat = () => {
   const session = useSession();
@@ -16,6 +17,7 @@ const Chat = () => {
   const [youtubeUrlInput, setYoutubeUrlInput] = useState<string>("");
   const [fetching, setFetching] = useState<boolean>(false);
   const { showFileUploader, toggleShowFileUploader } = useChatStore();
+  const { brainName } = useBrainStore();
 
   const { showNotification, toggleShowNotification, color, message, setColor, setMessage } = useNotificationStore();
 
@@ -37,6 +39,7 @@ const Chat = () => {
     setCrawling(true);
     const response = await uploadCrawler(
       session.data?.user?.email || "",
+      brainName,
       webUrlInput
     );
     
@@ -55,6 +58,7 @@ const Chat = () => {
     setFetching(true);
     const response = await extractVideo(
       session.data?.user?.email || "",
+      brainName,
       youtubeUrlInput
     );
 

@@ -1,10 +1,14 @@
 "use server";
 
-export async function addFile(email: string, uploadedFiles: Array<string>) {
+export async function addFile(
+  email: string,
+  brainName: string,
+  uploadedFiles: Array<string>
+) {
   try {
     const filePromises = uploadedFiles.map(async (file: any) => {
       const requestBody = {
-        namespace: email,
+        namespace: email + brainName,
         metadata: {
           type: "fileURL",
           link: file.Location,

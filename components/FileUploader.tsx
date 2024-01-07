@@ -11,6 +11,7 @@ import {
   QUADRANT_THREE_INFO,
 } from "@/constants";
 import { useNotificationStore } from "@/stores/NotificationStore";
+import { useBrainStore } from "@/stores/Brain";
 
 const FileUploader = () => {
 
@@ -21,6 +22,7 @@ const FileUploader = () => {
   const [uploading, setUploading] = useState<boolean>(false)
   const [steps, setSteps] = useState<number>(1)
   const { showNotification, toggleShowNotification, color, message, setColor, setMessage } = useNotificationStore();
+  const { brainName } = useBrainStore();
 
   const hideNotification = () => {
     setTimeout(() => {
@@ -57,6 +59,7 @@ const FileUploader = () => {
       const uploadedFiles = await fileUploader(selectedFiles)
       const response = await addFile(
         session.data?.user?.email || "",
+        brainName,
         uploadedFiles
       );
   
