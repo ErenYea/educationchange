@@ -6,9 +6,7 @@ import {
   createAChat,
   deleteAChat,
   getAllChats,
-  getAllTopics,
   getAllMessages,
-  generateMessage,
 } from "@/lib/chat";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -20,7 +18,6 @@ type Props = {};
 const Chats = (props: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userChats, setUserChats] = useState<Chat[]>([]);
-  const [userTopics, setUserTopics] = useState<Topic[]>([]);
   const [loadingChats, setLoadingChats] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const session = useSession();
@@ -31,7 +28,6 @@ const Chats = (props: Props) => {
   const [chatId, setChatId] = useState("");
   const [prompt, setPrompt] = useState("");
   const [promptUpdate, setPromptUpdate] = useState(false);
-  const [topicName, setTopicName] = useState<string>("");
   const [thinking, setThinking] = useState(false);
   const [showPromptUpdater, setShowPromptUpdater] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -57,12 +53,6 @@ const Chats = (props: Props) => {
     return response;
   };
 
-  const getTopics = async () => {
-    const response = await getAllTopics(session.data?.user.id || "");
-    setUserTopics(response.data);
-    return response;
-  };
-
   const getMessages = async (chatId: string) => {
     const response = await getAllMessages(chatId);
     setMessages(response.data);
@@ -70,15 +60,8 @@ const Chats = (props: Props) => {
   };
 
   useEffect(() => {
-    if (userTopics) {
-      setTopicName(userTopics[0]?.name);
-    }
-  }, [userTopics]);
-
-  useEffect(() => {
     if (session.data) {
       getChats();
-      getTopics();
     }
   }, [session]);
 

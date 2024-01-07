@@ -6,7 +6,6 @@ import {
   createAChat,
   deleteAChat,
   getAllChats,
-  getAllTopics,
   getAllMessages,
   generateMessage,
 } from "@/lib/chat";
@@ -15,11 +14,7 @@ import { Chat, Message } from "@prisma/client";
 import { usePathname } from "next/navigation";
 import { useChatConfig } from "@/stores/ChatConfig";
 import ChatConfig from "@/components/ChatConfig";
-
-type Topic = {
-  namespace: string;
-  content: string;
-};
+import { useBrainStore } from "@/stores/Brain";
 
 type Props = {};
 
@@ -29,7 +24,6 @@ const Chats = (props: Props) => {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [userChats, setUserChats] = useState<Chat[]>([]);
-  const [userTopics, setUserTopics] = useState<Topic[]>([]);
   const [isLoading, setIsLoading] = useState(false)
   const [loadingChats, setLoadingChats] = useState(true)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -46,6 +40,7 @@ const Chats = (props: Props) => {
   const [showConfigUpdater, setShowConfigUpdater] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [chatIdToDelete, setChatIdToDelete] = useState<string>("");
+  const { brainName } = useBrainStore();
 
   const createChat = async () => {
     setIsLoading(true)
@@ -61,12 +56,6 @@ const Chats = (props: Props) => {
     return response;
   };
 
-  const getTopics = async () => {
-    const response = await getAllTopics(session.data?.user.id || "");
-    setUserTopics(response.data);
-    return response;
-  };
-
   const getMessages = async (chatId: string) => {
     const response = await getAllMessages(chatId);
     setMessages(response.data);
@@ -77,7 +66,6 @@ const Chats = (props: Props) => {
   useEffect(() => {
     if (session.data) {
       getChats();
-      getTopics();
     }
   }, [session]);
 
@@ -93,6 +81,7 @@ const Chats = (props: Props) => {
     setThinking(true);
     await generateMessage(
       session.data?.user.email || "",
+      brainName,
       userInput,
       chatId,
       promptUpdate ? prompt : "",

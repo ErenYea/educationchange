@@ -2,10 +2,10 @@
 
 import db from "./db";
 
-export async function generateMessage(topicName: string, userInput: string, chatId:string, prompt: string, model: string, temperature: number, maxTokens: number) {
+export async function generateMessage(email: string, brainName: string, userInput: string, chatId:string, prompt: string, model: string, temperature: number, maxTokens: number) {
     try {
         const requestBody = {
-            namespace: topicName,
+            namespace: email + brainName,
             query: userInput,
             model: model,
             openAIKey: process.env.NEXT_PUBLIC_DEFAULT_OPENAI__API_KEY,
@@ -103,43 +103,11 @@ export async function getAllBrains(userId: string) {
     return { success: true, message: "successful", data: topicsResponse };
 }
 
-
-export async function getAllTopics(userId: string) {
-    const topicsResponse = await db.topic.findMany({
-        where: { userId: userId },
-    });
-    const topics = topicsResponse.map(topic => topic.name)
-    const details = await getTopicDetails(topics)
-    return { success: true, message: "successful", data: details };
-}
-
 export async function getAllMessages(chatId: string) {
     const messages = await db.message.findMany({
         where: { chatId: chatId },
     });
     return { success: true, message: "successful", data: messages };
-}
-
-export async function getTopicDetails(topics: String[]) {
-    try {
-        const requestBody = {
-            "namespace": topics
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/fetch`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        })
-
-        const data = await response.json()
-        return data
-
-    } catch (e) {
-        return { success: false, message: "error" };
-    }
 }
 
 export async function getUploadedData(email: string, brainName: string) {
