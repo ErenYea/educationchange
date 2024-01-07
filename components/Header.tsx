@@ -60,6 +60,13 @@ const Header = (props: Props) => {
     showAndHideNotification()
   }
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredBrains = userBrains.filter(
+    (brain) =>
+      brain.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="h-[60px] w-full flex justify-evenly border-b border-b-white/20 top-0 sticky z-50">
       <div className="w-full 2xl:max-w-7xl max-w-6xl flex items-center justify-center">
@@ -103,15 +110,17 @@ const Header = (props: Props) => {
                 <div className="flex-1">
                   <div>
                     <div className="flex flex-col w-full">
-                      <input
-                        className="w-full bg-gray-50 dark:bg-gray-900 px-4 py-2 border rounded-md border-black/10 dark:border-white/25"
-                        placeholder="Search for a brain"
-                      />
+                    <input
+                      className="w-full bg-gray-50 dark:bg-gray-900 px-4 py-2 border rounded-md border-black/10 dark:border-white/25"
+                      placeholder="Search for a brain"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                     </div>
                     <div className="flex flex-col h-48 mt-5 overflow-auto scrollbar">
                       <div className="relative flex flex-col items-center group">
                         {
-                          userBrains.map((brain) => (
+                          filteredBrains.map((brain) => (
                             <button key={brain.id} onClick={() => setBrainName(brain.name)} className="flex flex-1 items-center gap-2 w-full text-left p-2 text-sm leading-5 text-gray-900 dark:text-gray-300 hover:bg-gray-100/20">
                               <div className="w-6">
                                 {
