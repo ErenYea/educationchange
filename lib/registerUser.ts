@@ -57,6 +57,21 @@ export async function registerUser(prevState: any, formData: FormData) {
       data: { email, hashpassword: hashedPassword },
     });
 
+    const newlyCreatedUser = await db.user.findUnique({
+      where: { email },
+    });
+
+    if (!newlyCreatedUser) {
+      return {
+        success: false,
+        message: "Failed to find the newly created user",
+      };
+    }
+
+    await db.topic.create({
+      data: { userId: newlyCreatedUser.id, name: "Default Brain" },
+    });
+
     return { success: true, message: "New user created" };
   } catch (e) {
     console.error(e);

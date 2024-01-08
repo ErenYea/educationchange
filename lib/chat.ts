@@ -132,32 +132,3 @@ export async function getUploadedData(email: string, brainName: string) {
         return { success: false, message: "error" };
     }
 }
-
-export async function createDefaultBrain(userId: string) {
-    try {
-        const defaultBrainExists = await checkDefaultBrainExists(userId);
-
-        if (defaultBrainExists) {
-            return { success: false, message: "Default Brain already exists for this userId" };
-        }
-
-        await db.topic.create({
-            data: { userId: userId, name: "Default Brain" },
-        });
-
-        return { success: true, message: "Brain created successfully" };
-    } catch (error) {
-        return { success: false, message: "Error creating brain" };
-    }
-}
-
-async function checkDefaultBrainExists(userId: string): Promise<boolean> {
-    const existingBrain = await db.topic.findFirst({
-        where: {
-            userId: userId,
-            name: "Default Brain",
-        },
-    });
-
-    return !!existingBrain;
-}
