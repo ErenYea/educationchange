@@ -121,7 +121,8 @@ export async function getUploadedData(email: string, brainName: string) {
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify(requestBody),
+            cache: 'no-cache',
         })
 
         const data = await response.json()
