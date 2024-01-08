@@ -9,13 +9,14 @@ import { useBrainStore } from "@/stores/Brain";
 const Page = () => {
   
   const session = useSession();
+  const [email, setEmail] = useState(session.data?.user.email || "")
   const [content, setContent] = useState<{ [key: string]: string } | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [loading, setLoading] = useState(true)
   const { brainName } = useBrainStore();
 
   const getContent = async () => {
-    const response = await getUploadedData(session.data?.user.email || "", brainName);
+    const response = await getUploadedData(email, brainName);
     console.log(response)
     if (response.success) {
       if (!response.data.error) {
@@ -29,15 +30,13 @@ const Page = () => {
   };
 
   useEffect(() => {
+    setEmail(session.data?.user.email || "")
     setLoading(true)
-    const timeout = setTimeout(() => {
-      getContent();
-    }, 2000);
-    
-    return () => clearTimeout(timeout);
-  }, [brainName]);
+    if (email) {
+      getContent()
+    }
+  }, [brainName, session]);
   
-
   const showDetails = (topicName: string) => {
     setSelectedTopic(topicName === selectedTopic ? null : topicName);
   };
