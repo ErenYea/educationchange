@@ -45,17 +45,25 @@ const Header = (props: Props) => {
     return
   };
 
+  const [loading, setLoading] = useState<boolean>(true);
+
   useEffect(() => {
     if (session.data) {
-      getBrains();
+      getBrains().finally(() => {
+        setLoading(false);
+      });
     }
   }, [session]);
 
   const createNewBrain = async () => {
     setCreating(true)
     const response = await createABrain(session.data?.user.id || "", newBrainName);
-    
-    getBrains();
+
+    setLoading(true)
+    getBrains().finally(() => {
+      setLoading(false);
+    });
+
     setColor(response.success ? 'bg-green-500' : 'bg-red-500')
     setMessage(response.message)
     setNewBrainName("")
@@ -128,35 +136,44 @@ const Header = (props: Props) => {
                     </div>
                     <div className="flex flex-col h-48 mt-5 overflow-auto scrollbar">
                       <div className="relative flex flex-col items-center group">
-                        {
-                          filteredBrains.map((brain) => (
-                            <button key={brain.id} onClick={() => updateBrain(brain.name)} className="flex flex-1 items-center gap-2 w-full text-left p-2 text-sm leading-5 text-gray-900 dark:text-gray-300 hover:bg-gray-100/20">
-                              <div className="w-6">
-                                {
-                                  brain.name === brainName && (
-                                    <span className="">
-                                      <svg
-                                        stroke="currentColor"
-                                        fill="currentColor"
-                                        strokeWidth="0"
-                                        viewBox="0 0 24 24"
-                                        className="text-xl transition-opacity"
-                                        width="1em"
-                                        height="1em"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                      >
-                                        <path fill="none" d="M0 0h24v24H0z"></path>
-                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                      </svg>
-                                    </span>
-                                  )
-                                }
-                              </div>
-                              <span className="flex-1">{brain.name}</span>
-                            </button>
-
-                          )) 
-                        }
+                      {loading ? (
+                          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+                        ) : (
+                          
+                          <>
+                            {
+                              filteredBrains.map((brain) => (
+                                <button key={brain.id} onClick={() => updateBrain(brain.name)} className="flex flex-1 items-center gap-2 w-full text-left p-2 text-sm leading-5 text-gray-900 dark:text-gray-300 hover:bg-gray-100/20">
+                                  <div className="w-6">
+                                    {
+                                      brain.name === brainName && (
+                                        <span className="">
+                                          <svg
+                                            stroke="currentColor"
+                                            fill="currentColor"
+                                            strokeWidth="0"
+                                            viewBox="0 0 24 24"
+                                            className="text-xl transition-opacity"
+                                            width="1em"
+                                            height="1em"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                          >
+                                            <path fill="none" d="M0 0h24v24H0z"></path>
+                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                                          </svg>
+                                        </span>
+                                      )
+                                    }
+                                  </div>
+                                  <span className="flex-1">{brain.name}</span>
+                                </button>
+    
+                              )) 
+                            }
+                            
+                          </>
+                        )
+                      }
                         {/* <div className="absolute right-0 flex flex-row">
                           <button className="text-sm text-center font-medium rounded-md focus:ring ring-primary/10 outline-none flex items-center justify-center gap-2 text-black dark:text-white bg-transparent disabled:opacity-25 group-hover:visible invisible hover:text-red-500 transition-[colors,opacity] p-1">
                             <svg
