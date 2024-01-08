@@ -3,8 +3,9 @@
 import { loginUser } from "@/lib/loginUser";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export type State = {
   success: boolean;
@@ -39,6 +40,13 @@ const Form = (props: Props) => {
       router.refresh();
     }
   }, [state?.success]);
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+
   return (
     <form
       action={formAction}
@@ -51,13 +59,22 @@ const Form = (props: Props) => {
         className="w-full bg-gray-50 dark:bg-gray-900 px-4 py-2 border rounded-md border-black/10 dark:border-white/25"
         required
       />
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        className="w-full bg-gray-50 dark:bg-gray-900 px-4 py-2 border rounded-md border-black/10 dark:border-white/25"
-        required
-      />
+      <div className="relative w-full">
+        <input
+          type={showPassword ? "text" : "password"}
+          name="password"
+          placeholder="Password"
+          className="w-full bg-gray-50 dark:bg-gray-900 px-4 py-2 border rounded-md border-black/10 dark:border-white/25"
+          required
+        />
+        <div className="cursor-pointer absolute right-4 top-3">
+          {showPassword ? (
+            <FaEyeSlash onClick={togglePasswordVisibility} />
+          ) : (
+            <FaEye onClick={togglePasswordVisibility} />
+          )}
+        </div>
+      </div>
       <Submit />
       {pending
         ? ""
