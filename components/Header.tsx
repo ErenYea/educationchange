@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { createABrain, getAllBrains } from "@/lib/chat";
+import { createABrain, getAllBrains, createDefaultBrain } from "@/lib/chat";
 import { useSession } from "next-auth/react";
 import { useNotificationStore } from "@/stores/NotificationStore";
 import { useBrainStore } from "@/stores/Brain";
@@ -40,6 +40,10 @@ const Header = (props: Props) => {
 
   const getBrains = async () => {
     const response = await getAllBrains(session.data?.user.id || "");
+    if (response.data.length === 0 ) {
+      createDefaultBrain(session.data?.user.id || "")
+    }
+    console.log(response)
     setUserBrains(response.data)
     return
   };
