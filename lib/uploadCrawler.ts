@@ -24,6 +24,7 @@ export async function uploadCrawler(
           "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
+        cache: 'no-cache',
       }
     );
 
@@ -58,6 +59,7 @@ export async function extractVideo(
           "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
+        cache: 'no-cache',
       }
     );
 

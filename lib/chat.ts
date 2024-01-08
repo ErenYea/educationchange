@@ -19,7 +19,8 @@ export async function generateMessage(email: string, brainName: string, userInpu
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify(requestBody),
+            cache: 'no-cache',
         })
 
         const data = await response.json()
