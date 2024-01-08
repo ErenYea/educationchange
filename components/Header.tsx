@@ -24,8 +24,9 @@ const Header = (props: Props) => {
   const [newBrainName, setNewBrainName] = useState("")
   const [userBrains, setUserBrains] = useState<Brain[]>([]);
   const { brainName, setBrainName } = useBrainStore();
+  const [creating, setCreating] = useState<boolean | undefined>(false);
 
-  const { toggleShowNotification, color, message, setColor, setMessage } = useNotificationStore();
+  const { toggleShowNotification, setColor, setMessage } = useNotificationStore();
 
   const hideNotification = () => {
     setTimeout(() => {
@@ -51,13 +52,16 @@ const Header = (props: Props) => {
   }, [session]);
 
   const createNewBrain = async () => {
+    setCreating(true)
     const response = await createABrain(session.data?.user.id || "", newBrainName);
-
+    
+    getBrains();
     setColor(response.success ? 'bg-green-500' : 'bg-red-500')
     setMessage(response.message)
-    setShowNewBrainCreator(false)
     setNewBrainName("")
     showAndHideNotification()
+    setShowNewBrainCreator(false)
+    setCreating(false)
   }
 
   const updateBrain = (brainName: string) => {
@@ -253,10 +257,11 @@ const Header = (props: Props) => {
                   />
                   <div className="flex justify-between gap-3">
                     <button
+                      disabled={creating}
                       onClick={createNewBrain}
                       className="disabled:opacity-80 text-center font-medium focus:ring ring-primary/10 outline-none gap-2 dark:border-white text-black dark:text-white focus:bg-black dark:focus:bg-white dark:hover:bg-white dark:hover:text-black focus:text-white dark:focus:text-black transition-colors z-20 flex items-center grow justify-center px-4 py-2 text-xl bg-white border rounded-lg shadow-lg align-center border-primary dark:bg-black hover:text-white hover:bg-black top-1"
                     >
-                      <p>Create +</p>
+                      <p> { creating ? 'Creating...' : 'Create +' }</p>
                     </button>
                   </div>
                 </div>
